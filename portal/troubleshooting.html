@@ -75,6 +75,34 @@ bash scripts/setup-iran.sh</code></div>
     </details>
 
     <details class="faq">
+      <summary>میرور ایران npm کار می‌کند ولی بسته dsh را پیدا نمی‌کند — چه کنم؟</summary>
+      <div class="faq-body">
+        <p>میرور ایران برخی بسته‌های scoped (مثل <code>@deepseek-ai/dsh</code>) را کامل پوشش نمی‌دهد — <code>npm ping</code> سالم است ولی خود بسته نیست. اول تست کنید:</p>
+        <div class="code-block"><code>npm view @deepseek-ai/dsh version</code></div>
+        <p>اگر به‌جای نسخه، خطا داد، میرور چینی را تنظیم کنید — از ایران قابل دسترس و سریع است:</p>
+        <div class="code-block"><code>npm config set registry https://registry.npmmirror.com/
+npm view @deepseek-ai/dsh version   # باید نسخه چاپ شود
+npx @deepseek-ai/dsh web</code></div>
+        <p>اسکریپت <code>setup-iran</code> نسخه‌های جدید مخزن، این بررسی و سوییچ را خودکار انجام می‌دهد. راه نهایی: نصب از سورس محلی <code>dsh/</code> همین مخزن (آموزش ۰۲).</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>مرورگر روی 127.0.0.1:3080 می‌گوید ERR_CONNECTION_REFUSED — چرا؟</summary>
+      <div class="faq-body">
+        <p>یعنی هنوز هیچ سروری روی پورت ۳۰۸۰ گوش نمی‌دهد. دو حالت شایع دارد:</p>
+        <p><b>۱) اولین اجرا هنوز در حال دانلود است:</b> <code>npx</code> ابتدا بسته dsh را دانلود و کش می‌کند — بسته به شبکه چند دقیقه طول می‌کشد (در ترمینال نوار چرخان می‌بینید). تا ظاهر شدن لاگ گوش‌دادن سرور صبر کنید، بعد در مرورگر Reload بزنید.</p>
+        <p><b>۲) دانلود شکست خورده:</b> اگر ترمینال به prompt برگشت و خطا داد. تست کنید سرور واقعاً بالا آمده یا نه:</p>
+        <div class="code-block"><code># ویندوز (PowerShell)
+Get-NetTCPConnection -LocalPort 3080 -ErrorAction SilentlyContinue
+
+# لینوکس / مک
+ss -tlnp | grep 3080</code></div>
+        <p>خروجی خالی = سرور اجرا نشده؛ معمولاً مشکل از دسترسی به بسته است (سؤال قبل را ببینید).</p>
+      </div>
+    </details>
+
+    <details class="faq">
       <summary>چطور پروکسی را برای همه ابزارها تنظیم کنم؟</summary>
       <div class="faq-body">
         <p>متغیرهای محیطی استاندارد HTTP — اکثر ابزارها (npm، pnpm، گیت، curl) می‌فهمند:</p>

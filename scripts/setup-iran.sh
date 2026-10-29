@@ -61,6 +61,23 @@ else
   err "مثال: PROXY=http://127.0.0.1:8118 bash setup-iran.sh"
 fi
 
+# ---------- ۲.۵) بررسی موجودی بسته dsh ----------
+NPM_CHINA_MIRROR="https://registry.npmmirror.com/"
+log "بررسی موجودی @deepseek-ai/dsh در رجیستری فعلی…"
+if ! npm view @deepseek-ai/dsh version >/dev/null 2>&1; then
+  err "بسته dsh در این رجیستری یافت نشد (میرور ایران بسته‌های scoped را کامل پوشش نمی‌دهد)."
+  log "سوییچ خودکار به میرور چینی npmmirror.com (از ایران قابل دسترس است)…"
+  npm config set registry "$NPM_CHINA_MIRROR"
+  if npm view @deepseek-ai/dsh version >/dev/null 2>&1; then
+    log "بسته پیدا شد ✓ (رجیستری روی npmmirror.com تنظیم شد؛ برگشت: npm config set registry $IRAN_MIRROR)"
+  else
+    npm config set registry "$IRAN_MIRROR"
+    err "در npmmirror هم پیدا نشد. با پروکسی + رجیستری رسمی امتحان کنید یا از سورس محلی dsh/ نصب کنید (آموزش ۰۲)."
+  fi
+else
+  log "بسته dsh در رجیستری فعلی موجود است ✓"
+fi
+
 # ---------- ۳) پروکسی (اختیاری) ----------
 if [[ -n "${PROXY:-}" ]]; then
   log "تنظیم متغیرهای پروکسی روی $PROXY"
@@ -77,5 +94,7 @@ log "همه تنظیمات انجام شد. اجرای dsh web…"
 echo ""
 echo "  دستور: npx @deepseek-ai/dsh web"
 echo "  آدرس پس از اجرا: http://127.0.0.1:3080"
+echo ""
+log "نکته: اولین اجرا ممکن است چند دقیقه طول بکشد (دانلود بسته). تا لاگ گوش‌دادن سرور ظاهر نشده، مرورگر ERR_CONNECTION_REFUSED می‌دهد — نگران نباشید، صبر کنید و بعد Reload بزنید."
 echo ""
 exec npx -y @deepseek-ai/dsh web

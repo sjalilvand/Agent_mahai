@@ -49,7 +49,26 @@ Write-Log "تنظیم میرور ایرانی npm: $IranMirror"
 npm config set registry $IranMirror
 Write-Log "میرور برای npm تنظیم شد ✓"
 
-# ---------- ۳) پروکسی (اختیاری) ----------
+# ---------- ۳) بررسی موجودی بسته dsh ----------
+$ChinaMirror = "https://registry.npmmirror.com/"
+Write-Log "بررسی موجودی @deepseek-ai/dsh در رجیستری فعلی…"
+npm view "@deepseek-ai/dsh" version 2>$null | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Err "بسته dsh در این رجیستری یافت نشد (میرور ایران بسته‌های scoped را کامل پوشش نمی‌دهد)."
+    Write-Log "سوییچ خودکار به میرور چینی npmmirror.com (از ایران قابل دسترس است)…"
+    npm config set registry $ChinaMirror
+    npm view "@deepseek-ai/dsh" version 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        npm config set registry $IranMirror
+        Write-Err "در npmmirror هم پیدا نشد. با پروکسی + رجیستری رسمی امتحان کنید یا از سورس محلی dsh/ نصب کنید (آموزش ۰۲)."
+    } else {
+        Write-Log "بسته پیدا شد ✓ (رجیستری روی npmmirror.com تنظیم شد؛ برگشت: npm config set registry $IranMirror)"
+    }
+} else {
+    Write-Log "بسته dsh در رجیستری فعلی موجود است ✓"
+}
+
+# ---------- ۴) پروکسی (اختیاری) ----------
 if ($env:PROXY) {
     Write-Log "تنظیم پروکسی روی $($env:PROXY)"
     $env:HTTP_PROXY  = $env:PROXY
@@ -57,10 +76,12 @@ if ($env:PROXY) {
     $env:NO_PROXY    = "localhost,127.0.0.1,registry.npmjs.ir"
 }
 
-# ---------- ۴) اجرای dsh ----------
+# ---------- ۵) اجرای dsh ----------
 Write-Log "همه تنظیمات انجام شد. اجرای dsh web…"
 Write-Host ""
 Write-Host "  دستور: npx @deepseek-ai/dsh web"
 Write-Host "  آدرس پس از اجرا: http://127.0.0.1:3080"
+Write-Host ""
+Write-Log "نکته: اولین اجرا ممکن است چند دقیقه طول بکشد (دانلود بسته). تا لاگ گوش‌دادن سرور ظاهر نشده، مرورگر ERR_CONNECTION_REFUSED می‌دهد — نگران نباشید، صبر کنید و بعد Reload بزنید."
 Write-Host ""
 npx -y "@deepseek-ai/dsh" web
