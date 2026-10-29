@@ -19,7 +19,7 @@
 
   /* نسخهٔ پوستهٔ فارسی — با هر انتشار +۱ می‌شود. در نوار برند سایدبار نمایش
      داده می‌شود تا کاربر ببیند کدام نسخه در مرورگرش اجراست (تشخیص کش). */
-  var SKIN_VER = '7';
+  var SKIN_VER = '8';
   try {
     window.__MAHAI_SKIN = SKIN_VER;
     console.log('%c ماه‌ای — پوستهٔ فارسی نسخهٔ ' + SKIN_VER + ' ',
@@ -347,10 +347,101 @@
 
     /* صفحهٔ آغازین (Into the Unknown) */
     'Into the Unknown': 'سفر به ناشناخته‌ها',
+    '探索未至之境': 'سفر به ناشناخته‌ها',
     'Choose workspace': 'انتخاب فضای کاری',
     'Choose a workspace to start': 'برای شروع، فضای کاری را انتخاب کنید',
     'Standard mode': 'حالت استاندارد',
     'Add files or run commands': 'افزودن فایل یا اجرای دستورات',
+
+    /* --- منوی انتخاب حالت عامل (ui-agent-preset) — EN + ZH دقیق از سورس dsh --- */
+    'PTC mode': 'حالت PTC',
+    'Minimal mode': 'حالت مینیمال',
+    'Creator mode': 'حالت خلاق',
+    'Work with code, files, and information. Suitable for most tasks, with search, editing, terminal commands, and other tools available as needed.': 'کار با کد، فایل‌ها و اطلاعات؛ مناسب بیشتر کارها. جست‌وجو، ویرایش، دستورهای پایانه و ابزارهای دیگر در صورت نیاز در دسترس‌اند.',
+    'Includes all Standard mode capabilities. Better suited to tasks that call tools in batches and then filter, organize, deduplicate, count, or summarize the results.': 'همهٔ توانایی‌های حالت استاندارد را دارد؛ مناسب‌تر برای کارهایی که ابزارها را دسته‌ای فراخوانی می‌کنند و سپس نتایج را پالایش، سامان‌دهی، حذف تکرار، شمارش یا خلاصه می‌کنند.',
+    'The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance.': 'عامل از پایانه و خواندن تصویر استفاده می‌کند و فشرده‌سازی زمینه هم دارد؛ برای آزمایش و مقایسهٔ کارایی پایه مفید است.',
+    'Customize DSH through conversation. Let the agent write plugins that add features or UI, or combine tools and prompts to create your own mode.': 'شخصی‌سازی ماه‌ای از راه گفت‌وگو؛ بگذارید عامل افزونه بنویسد تا قابلیت یا رابط تازه بیفزاید، یا ابزارها و پرسش‌ها را ترکیب کند تا حالت خودتان را بسازید.',
+    /* نسخهٔ ترکیبی آیتم منو (اگر نام و توضیح در یک گره متنی باشند) */
+    'Standard mode Work with code, files, and information. Suitable for most tasks, with search, editing, terminal commands, and other tools available as needed.': 'حالت استاندارد — کار با کد، فایل‌ها و اطلاعات؛ مناسب بیشتر کارها. جست‌وجو، ویرایش، دستورهای پایانه و ابزارهای دیگر در صورت نیاز در دسترس‌اند.',
+    'PTC mode Includes all Standard mode capabilities. Better suited to tasks that call tools in batches and then filter, organize, deduplicate, count, or summarize the results.': 'حالت PTC — همهٔ توانایی‌های حالت استاندارد را دارد؛ مناسب‌تر برای کارهایی که ابزارها را دسته‌ای فراخوانی می‌کنند و سپس نتایج را پالایش، سامان‌دهی، حذف تکرار، شمارش یا خلاصه می‌کنند.',
+    'Minimal mode The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance.': 'حالت مینیمال — عامل از پایانه و خواندن تصویر استفاده می‌کند و فشرده‌سازی زمینه هم دارد؛ برای آزمایش و مقایسهٔ کارایی پایه مفید است.',
+    'Creator mode Customize DSH through conversation. Let the agent write plugins that add features or UI, or combine tools and prompts to create your own mode.': 'حالت خلاق — شخصی‌سازی ماه‌ای از راه گفت‌وگو؛ بگذارید عامل افزونه بنویسد تا قابلیت یا رابط تازه بیفزاید، یا ابزارها و پرسش‌ها را ترکیب کند تا حالت خودتان را بسازید.',
+    /* پنل راهنمای حالت‌ها */
+    'Mode details': 'جزئیات حالت',
+    'How to use': 'روش استفاده',
+    'Guide sections': 'بخش‌های راهنما',
+    'Example task': 'نمونهٔ کار',
+    'Copy': 'کپی',
+    'Footnotes': 'پانویس‌ها',
+    'Choose Standard mode when starting a new task. Describe what you want to accomplish, point to the relevant files, and explain how to check the result.': 'برای آغاز کار جدید حالت استاندارد را برگزینید. بگویید چه می‌خواهید انجام شود، فایل‌های مربوط را نشان دهید و روش بررسی نتیجه را توضیح دهید.',
+    'Choose PTC mode when starting a new task. Specify the input files, processing rules, and output format. The agent writes the code.': 'برای آغاز کار جدید حالت PTC را برگزینید. فایل‌های ورودی، قواعد پردازش و قالب خروجی را مشخص کنید؛ نوشتن کد با عامل است.',
+    'Choose Minimal mode for a new task. For a comparison, hold the model, permissions, input, and starting workspace state constant across runs.': 'برای کار جدید حالت مینیمال را برگزینید. برای مقایسه، مدل، مجوزها، ورودی و وضعیت آغازین فضای کاری را در همهٔ اجراها ثابت نگه دارید.',
+    'Choose Creator mode for a new task. Describe the capability you want, where it should appear, and how you will verify it.': 'برای کار جدید حالت خلاق را برگزینید. قابلیت موردنظر، محل نمایش و روش تأیید آن را شرح دهید.',
+    /* بخش مدیریت حالت‌ها */
+    'Agent presets': 'حالت‌های عامل',
+    'Choose the agent preset for your new task': 'حالت عامل را برای کار جدیدتان انتخاب کنید',
+    'The agent preset chosen when this task started': 'حالت عاملِ انتخاب‌شده هنگام آغاز این کار',
+    'Set as new task default': 'به‌عنوان پیش‌فرض کار جدید',
+    'View configuration': 'مشاهدهٔ پیکربندی',
+    'New task default': 'پیش‌فرض کار جدید',
+    'No description.': 'بدون توضیح.',
+    'Failed to load': 'بارگذاری ناموفق',
+    'Built-in': 'داخلی',
+    'Custom': 'سفارشی',
+    'Choose the agent’s tools and how it works. Use Standard mode for everyday tasks, or Creator mode to add capabilities to DSH.': 'ابزارها و شیوهٔ کار عامل را انتخاب کنید. برای کارهای روزمره حالت استاندارد و برای افزودن توانایی به ماه‌ای حالت خلاق را به کار ببرید.',
+    'Standard mode is unavailable. Restore it or choose another available mode.': 'حالت استاندارد در دسترس نیست؛ آن را بازیابی کنید یا حالت دیگری برگزینید.',
+    'Let the agent help me create a preset': 'بگذارید عامل در ساختن یک حالت کمکم کند',
+    'Let the agent create a plugin': 'بگذارید عامل افزونه‌ای بسازد',
+    'Enter Creator mode and make your own DSH plugin': 'به حالت خلاق بروید و افزونهٔ خودتان را بسازید',
+    'Checking whether Creator mode is available': 'بررسی در دسترس بودن حالت خلاق',
+    'Temporarily unavailable. Reopen this menu to retry': 'موقتاً در دسترس نیست؛ برای تلاش دوباره این منو را دوباره باز کنید',
+    'Creator mode is not included in this configuration': 'این پیکربندی حالت خلاق ندارد',
+    /* حالت‌های مجوز (دکمهٔ حالت دسترسی در صفحهٔ آغازین) */
+    'Read Only': 'فقط خواندنی',
+    'Workspace Write': 'نوشتن در فضای کاری',
+    'Full access': 'دسترسی کامل',
+    'Enable Full access?': 'دسترسی کامل فعال شود؟',
+    'Full access reduces confirmation steps and lets the agent perform more actions directly, including sensitive operations, file changes, or external commands. Only use it when you trust the current task.': 'دسترسی کامل گام‌های تأیید را کم می‌کند و به عامل اجازه می‌دهد کارهای بیشتری را مستقیم انجام دهد؛ از جمله کارهای حساس، تغییر فایل‌ها یا دستورهای بیرونی. فقط وقتی به کار جاری اعتماد دارید به کار ببرید.',
+    'I understand the risks and want to continue': 'ریسک‌ها را می‌دانم و می‌خواهم ادامه دهم',
+    'Enable Full access': 'فعال‌سازی دسترسی کامل',
+    'Auto review': 'بازبینی خودکار',
+    'Run without a sandbox after an experimental same-model review of every native tool call and PTC inner call.': 'اجرای بدون سندباکس، پس از بازبینی آزمایشیِ همان‌مدل برای هر فراخوانی ابزار و فراخوانی درونی PTC.',
+    'Enable Auto review (experimental)?': 'بازبینی خودکار (آزمایشی) فعال شود؟',
+    'I understand these risks and want to continue': 'این ریسک‌ها را می‌دانم و می‌خواهم ادامه دهم',
+    'Enable Auto review': 'فعال‌سازی بازبینی خودکار',
+    /* نسخه‌های چینی رشته‌های بالا (موتور گاهی زبان پیش‌فرض چینی می‌فرستد) */
+    '标准模式': 'حالت استاندارد',
+    'PTC 模式': 'حالت PTC',
+    '极简模式': 'حالت مینیمال',
+    '创造模式': 'حالت خلاق',
+    '处理代码、文件和资料，适合大多数任务。Agent 会按需使用检索、编辑和终端等工具。': 'کار با کد، فایل‌ها و اطلاعات؛ مناسب بیشتر کارها. جست‌وجو، ویرایش، دستورهای پایانه و ابزارهای دیگر در صورت نیاز در دسترس‌اند.',
+    '包含标准模式的所有能力，更适合批量调用工具，并对结果进行筛选、整理、去重、统计或汇总的任务。': 'همهٔ توانایی‌های حالت استاندارد را دارد؛ مناسب‌تر برای کارهایی که ابزارها را دسته‌ای فراخوانی می‌کنند و سپس نتایج را پالایش، سامان‌دهی، حذف تکرار، شمارش یا خلاصه می‌کنند.',
+    'Agent 使用终端和图片读取工具，并支持上下文压缩，适合测试和对比其基础表现。': 'عامل از پایانه و خواندن تصویر استفاده می‌کند و فشرده‌سازی زمینه هم دارد؛ برای آزمایش و مقایسهٔ کارایی پایه مفید است.',
+    '用对话定制 DSH：让 Agent 编写插件，添加新功能或界面；也能组合工具和提示词，创建自己的模式。': 'شخصی‌سازی ماه‌ای از راه گفت‌وگو؛ بگذارید عامل افزونه بنویسد تا قابلیت یا رابط تازه بیفزاید، یا ابزارها و پرسش‌ها را ترکیب کند تا حالت خودتان را بسازید.',
+    '选择新任务使用的 Agent 预设': 'حالت عامل را برای کار جدیدتان انتخاب کنید',
+    '本任务的 Agent 预设，在任务开始时确定': 'حالت عاملِ انتخاب‌شده هنگام آغاز این کار',
+    'Agent 预设': 'حالت‌های عامل',
+    '设为新任务默认': 'به‌عنوان پیش‌فرض کار جدید',
+    '查看配置': 'مشاهدهٔ پیکربندی',
+    '新任务默认': 'پیش‌فرض کار جدید',
+    '暂无描述。': 'بدون توضیح.',
+    '加载失败': 'بارگذاری ناموفق',
+    '内置': 'داخلی',
+    '自定义': 'سفارشی',
+    '标准模式不可用，请恢复该模式或选择其他可用模式。': 'حالت استاندارد در دسترس نیست؛ آن را بازیابی کنید یا حالت دیگری برگزینید.',
+    '仅可查看': 'فقط خواندنی',
+    '工作区内修改': 'نوشتن در فضای کاری',
+    '完全权限': 'دسترسی کامل',
+    '确认启用完全权限？': 'دسترسی کامل فعال شود؟',
+    '我已了解风险，并愿意继续': 'ریسک‌ها را می‌دانم و می‌خواهم ادامه دهم',
+    '启用完全权限': 'فعال‌سازی دسترسی کامل',
+    '自动审查': 'بازبینی خودکار',
+    '让 Agent 帮我创建预设模式': 'بگذارید عامل در ساختن یک حالت کمکم کند',
+    '让 Agent 创建插件': 'بگذارید عامل افزونه‌ای بسازد',
+    '进入创造模式，制作属于你的 DSH 插件': 'به حالت خلاق بروید و افزونهٔ خودتان را بسازید',
+    '正在确认创造模式是否可用': 'بررسی در دسترس بودن حالت خلاق',
+    '暂时不可用，请重新打开菜单重试': 'موقتاً در دسترس نیست؛ برای تلاش دوباره این منو را دوباره باز کنید',
+    '当前配置未提供创造模式': 'این پیکربندی حالت خلاق ندارد',
 
     /* متن دیالوگ شروع */
     'Sign in to your DeepSeek account or add an API Key to get started. Your projects and files are stored locally.': 'برای شروع، به حساب DeepSeek خود وارد شوید یا کلید API اضافه کنید. پروژه‌ها و فایل‌های شما به‌صورت محلی ذخیره می‌شوند.',
@@ -493,6 +584,8 @@
     }],
 
     /* نوار وضعیت: «1 tok/s» و «1%» به‌صورت یک گره واحد */
+    [/^Could not switch to (.+): (.+)$/u, function (m) { return 'جابه‌جایی به «' + m[1] + '» انجام نشد: ' + m[2]; }],
+    [/^Access mode, current: (.+)$/u, function (m) { return 'حالت دسترسی، فعلی: ' + m[1]; }],
     [/^\s*(\d+(?:[.,]\d+)?)\s*tok\/s\s*$/u, function (m) { return m[1] + ' توکن/ث'; }],
     [/^\s*(\d+(?:[.,]\d+)?)\s*%\s*$/u, function (m) { return m[1] + '٪'; }]
   ];
@@ -623,34 +716,49 @@
 
   /* ---------- ۵٫۵) نشان ماه‌ای در قهرمان صفحهٔ آغازین ----------
      جای نهنگ پنهان‌شدهٔ DeepSeek، ارم ماه‌ای می‌نشیند و زیر تیتر،
-     نام شرکت می‌آید — تا صفحهٔ خوش‌آمد کاملاً «ماه‌افزار هوشمند رسا» شود. */
+     نام شرکت می‌آید — تا صفحهٔ خوش‌آمد کاملاً «ماه‌افزار هوشمند رسا» شود.
+     نکتهٔ مهم: در dsh تازه (EmptyHero.tsx) تیتر یک <span> داخل
+     titleGroup/headline ماژولی است، نه h1/h2 — پس عناصر برگ را هم می‌گردیم. */
   function injectHero() {
-    var cand = document.querySelectorAll('h1,h2');
-    for (var i = 0; i < cand.length; i++) {
-      var t = (cand[i].textContent || '').trim();
+    if (document.getElementById('mahai-hero') && document.getElementById('mahai-hero-tag')) return;
+    var els = document.querySelectorAll('h1,h2,span,div');
+    var title = null;
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (el.children.length !== 0) continue; /* فقط گره‌های متنی برگ */
+      var t = (el.textContent || '').trim();
       if (!t || t.length > 60) continue;
-      if (!/^(سفر به ناشناخته‌ها|Into the Unknown)$/.test(t)) continue;
-      var host = cand[i].parentElement;
+      if (/^(سفر به ناشناخته‌ها|Into the Unknown|探索未至之境)$/.test(t)) { title = el; break; }
+    }
+    if (!title) return;
+    /* مرز درج: گروه تیتر و ردیف تیتر را با کلاس ماژولی (_titleGroup_…/_headline_…)
+       می‌شناسیم تا ارم «بالای کل ردیف تیتر» بنشیند، نه کنارش؛
+       در ساختارهای دیگر (h1/h2) همان خودِ عنوان مرز است. */
+    var group = (title.parentElement && /titleGroup/i.test(title.parentElement.className || ''))
+      ? title.parentElement : title;
+    var headline = (group.parentElement && /headline/i.test(group.parentElement.className || ''))
+      ? group.parentElement : group;
+    var host = headline.parentElement;
+    if (!host || host === document.body) {
+      host = title.parentElement;
+      headline = title;
       if (!host || host === document.body) return;
-
-      if (!document.getElementById('mahai-hero')) {
-        var hero = document.createElement('div');
-        hero.id = 'mahai-hero';
-        hero.setAttribute('dir', 'rtl');
-        hero.innerHTML =
-          '<img src="./mahai/logo.png" alt="ارم ماه‌ای" />' +
-          '<div class="mahai-hero-name">ماه‌ای</div>';
-        host.insertBefore(hero, cand[i]);
-      }
-      if (!document.getElementById('mahai-hero-tag')) {
-        var tag = document.createElement('div');
-        tag.id = 'mahai-hero-tag';
-        tag.setAttribute('dir', 'rtl');
-        tag.textContent = 'محصول شرکت ماه‌افزار هوشمند رسا';
-        if (cand[i].nextSibling) host.insertBefore(tag, cand[i].nextSibling);
-        else host.appendChild(tag);
-      }
-      return;
+    }
+    if (!document.getElementById('mahai-hero')) {
+      var hero = document.createElement('div');
+      hero.id = 'mahai-hero';
+      hero.setAttribute('dir', 'rtl');
+      hero.innerHTML =
+        '<img src="./mahai/logo.png" alt="ارم ماه‌ای" />' +
+        '<div class="mahai-hero-name">ماه‌ای</div>';
+      host.insertBefore(hero, headline);
+    }
+    if (!document.getElementById('mahai-hero-tag')) {
+      var tag = document.createElement('div');
+      tag.id = 'mahai-hero-tag';
+      tag.setAttribute('dir', 'rtl');
+      tag.textContent = 'محصول شرکت ماه‌افزار هوشمند رسا';
+      headline.parentNode.insertBefore(tag, headline.nextSibling);
     }
   }
 
