@@ -1,0 +1,35 @@
+# ============================================================
+# .gitattributes — انتهای خط‌ها و نوع فایل‌ها را یکدست نگه می‌دارد
+# ------------------------------------------------------------
+# چرا؟ گیت در ویندوز به‌صورت پیش‌فرض (core.autocrlf=true) هنگام
+# checkout انتهای خط‌ها را به CRLF تبدیل می‌کند؛ نتیجه: bash هنگام
+# اجرای اسکریپت‌های .sh خطای «set: pipefail: invalid option name»
+# می‌دهد. با این فایل، اسکریپت‌های .sh همیشه با LF تحویل گرفته
+# می‌شوند و اسکریپت‌های ویندوزی با CRLF.
+# ============================================================
+
+# اسکریپت‌های شل — حتماً LF (لینوکس/مک/WSL)
+*.sh            text eol=lf
+*.bash          text eol=lf
+
+# اسکریپت‌های ویندوز — حتماً CRLF
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+*.psm1          text eol=crlf
+
+# فایل‌های باینری — هرگز تبدیل نشوند
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.zip           binary
+*.gz            binary
+*.tgz           binary
+*.woff          binary
+*.woff2         binary
+*.ttf           binary
+*.otf           binary
+*.eot           binary

@@ -41,10 +41,25 @@ npx @deepseek-ai/dsh web --no-open
 
 ```sh
 # اسکریپت آماده بومی‌سازی — میرور npm ایران + تنظیمات پروکسی
+
+# ویندوز — ساده‌ترین راه (سیاست اجرا خودکار بای‌پس می‌شود):
+.\scripts\setup-iran.bat
+
+# ویندوز — فراخوانی مستقیم PowerShell:
+powershell -ExecutionPolicy Bypass -File scripts\setup-iran.ps1
+
+# لینوکس / مک / WSL:
 bash scripts/setup-iran.sh
+
 # سپس دوباره:
 npx @deepseek-ai/dsh web
 ```
+
+> ⚠️ **دو خطای رایج ویندوز و راه‌حل:**
+> 1. «running scripts is disabled on this system» → اجرای اسکریپت PowerShell قفل است؛ از `setup-iran.bat` استفاده کنید یا فلگ `-ExecutionPolicy Bypass` را اضافه کنید.
+> 2. «set: pipefail: invalid option name» → اسکریپت `.sh` را در ویندوز اجرا کرده‌اید (مشکل CRLF). در ویندوز فقط `.bat`/`.ps1` را اجرا کنید؛ `.sh` مخصوص لینوکس/مک/WSL است.
+>
+> توضیح کامل: [آموزش ۰۹، بخش ۸](docs-fa/09-رفع-مشکلات-رایج-ایران.md)
 
 راهنمای کامل رفع خطاهای شبکه و تحریم: [آموزش ۰۹ — رفع مشکلات رایج در ایران](docs-fa/09-رفع-مشکلات-رایج-ایران.md)
 
@@ -90,8 +105,9 @@ npx serve .                         # با نود
 
 | اسکریپت | سیستم‌عامل | کار |
 |---|---|---|
-| `scripts/setup-iran.sh` | لینوکس / مک | تنظیم میرور npm ایران برای npm و pnpm، پشتیبانی پروکسی، نصب و اجرای dsh |
-| `scripts/setup-iran.ps1` | ویندوز (PowerShell) | همان عملکرد بالا برای ویندوز |
+| `scripts/setup-iran.bat` | ویندوز (ساده‌ترین راه) | لانچر یک‌کلیکی؛ PowerShell را با `-ExecutionPolicy Bypass` اجرا می‌کند |
+| `scripts/setup-iran.sh` | لینوکس / مک / WSL | تنظیم میرور npm ایران برای npm و pnpm، پشتیبانی پروکسی، نصب و اجرای dsh |
+| `scripts/setup-iran.ps1` | ویندوز (PowerShell) | همان عملکرد بالا برای ویندوز — بدون `.bat` باید با فلگ `-ExecutionPolicy Bypass` اجرا شود |
 | `scripts/npmrc-iran` | همه | قالب آماده `.npmrc` با میرور ایران |
 | `scripts/proxy-env.sh` | لینوکس / مک | قالب متغیرهای محیطی پروکسی |
 

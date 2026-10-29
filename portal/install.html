@@ -96,10 +96,13 @@ pnpm dsh web</code></div>
         <div class="step" id="script">
           <h3>اسکریپت خودکار بومی‌سازی</h3>
           <p>همه گام‌های بالا (میرور + پروکسی + اجرا) با یک دستور:</p>
-          <div class="code-block"><code># لینوکس / مک
+          <div class="code-block"><code># لینوکس / مک / WSL
 bash scripts/setup-iran.sh
 
-# ویندوز (PowerShell)
+# ویندوز — ساده‌ترین راه (ExecutionPolicy خودکار بای‌پس می‌شود)
+.\scripts\setup-iran.bat
+
+# ویندوز — فراخوانی مستقیم PowerShell
 powershell -ExecutionPolicy Bypass -File scripts\setup-iran.ps1
 
 # با پروکسی

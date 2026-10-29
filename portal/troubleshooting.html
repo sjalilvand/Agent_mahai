@@ -49,7 +49,28 @@
         <div class="code-block"><code>npm config set registry https://registry.npmjs.ir/
 npm ping
 npx @deepseek-ai/dsh web</code></div>
-        <p>یا اسکریپت آماره: <code>bash scripts/setup-iran.sh</code> (لینوکس/مک) — <code>scripts\setup-iran.ps1</code> (ویندوز).</p>
+        <p>یا اسکریپت آماره: <code>bash scripts/setup-iran.sh</code> (لینوکس/مک) — <code>.\scripts\setup-iran.bat</code> (ویندوز، بدون دردسر ExecutionPolicy).</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>ویندوز می‌گوید «running scripts is disabled» — چه کنم؟</summary>
+      <div class="faq-body">
+        <p>سیاست اجرای PowerShell به‌صورت پیش‌فرض روی <code>Restricted</code> است و اجرای اسکریپت را قفل می‌کند. ساده‌ترین راه، لانچر بات خودِ مخزن است که بای‌پس را خودش انجام می‌دهد:</p>
+        <div class="code-block"><code>.\scripts\setup-iran.bat</code></div>
+        <p>یا فلگ Bypass فقط برای همین یک اجرا:</p>
+        <div class="code-block"><code>powershell -ExecutionPolicy Bypass -File scripts\setup-iran.ps1</code></div>
+        <p>برای همیشه (کاربر فعلی): <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code></p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>bash می‌گوید «set: pipefail: invalid option name» — مشکل چیست؟</summary>
+      <div class="faq-body">
+        <p>اسکریپت <code>.sh</code> را در ویندوز اجرا کرده‌اید (یا انتهای خط‌ها CRLF شده). در ویندوز فقط از <code>setup-iran.bat</code> یا <code>setup-iran.ps1</code> استفاده کنید. در WSL یک‌بار انتهای خط‌ها را درست کنید:</p>
+        <div class="code-block"><code>sed -i 's/\r$//' scripts/setup-iran.sh
+bash scripts/setup-iran.sh</code></div>
+        <p>نسخه‌های جدید مخزن با <code>.gitattributes</code> این مشکل را برای کلون‌های تازه حل کرده‌اند.</p>
       </div>
     </details>
 
