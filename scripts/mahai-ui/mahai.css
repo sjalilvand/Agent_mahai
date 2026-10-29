@@ -1,0 +1,147 @@
+/* ============================================================
+   ماه‌ای (MahAI) — لایهٔ رابط فارسی و راست‌چین برای dsh web
+   محصول شرکت ماه‌افزار هوشمند رسا
+   این فایل توسط scripts/patch-mahai-ui.sh|.ps1 روی dist فرانت‌اند
+   کپی و از index.html بارگذاری می‌شود. به‌روزرسانی dsh این فایل را
+   حذف نمی‌کند؛ فقط پچ دوباره لازم است (در setup-iran خودکار است).
+   ============================================================ */
+
+/* ---------- قلم وزیرمتن ---------- */
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vazirmatn';
+  src: url('./fonts/Vazirmatn-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- توکن‌های رنگ ماه‌ای (آبی لوگو) ----------
+   توجه: بستهٔ تم dsh توکن‌ها را در زمان اجرا روی :root و
+   body[data-ds-dark-theme] تزریق می‌کند و «بعدها = برنده» است؛
+   بنابراین اینجا با :root:root و html body[...] سرعتِ (specificity)
+   بالاتر می‌گیریم تا بازنویسی ما همیشه برقرار بماند. */
+:root {
+  --mahai-blue-900: #0a1630;
+  --mahai-blue-700: #154a8f;
+  --mahai-blue-600: #1d6fc0;
+  --mahai-blue-500: #3282d0;
+  --mahai-blue-400: #5aa2ea;
+  --mahai-blue-300: #8fc0f2;
+  --mahai-blue-100: #e3effb;
+  --mahai-blue-tint: #eaf3fc;
+}
+:root:root,
+html body {
+  /* بازنویسی توکن‌های تم dsh در حالت روشن */
+  --dsw-alias-brand-primary: var(--mahai-blue-600);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--mahai-blue-600);
+  --dsw-alias-button-primary-fill: var(--mahai-blue-600);
+  --dsw-alias-button-primary-hover: var(--mahai-blue-700);
+  --dsw-alias-interactive-bg-active: #1d6fc01f;
+  --dsw-alias-interactive-bg-hover-accent: #1d6fc014;
+  --dsw-alias-button-ghost-active-border: var(--mahai-blue-500);
+  --dsw-alias-state-idle-primary: var(--mahai-blue-500);
+  --dsw-alias-menu-icon: var(--mahai-blue-600);
+  /* اسپینر صفحهٔ بوت (پیش از رندر ری‌اکت) */
+  --dsh-boot-brand: var(--mahai-blue-600);
+}
+
+/* حالت تاریک — روشن‌تر برای خوانایی روی زمینهٔ تیره */
+html body[data-ds-dark-theme] {
+  --dsw-alias-brand-primary: var(--mahai-blue-400);
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--mahai-blue-400);
+  --dsw-alias-button-primary-fill: var(--mahai-blue-600);
+  --dsw-alias-button-primary-hover: var(--mahai-blue-500);
+  --dsw-alias-interactive-bg-active: #5aa2ea26;
+  --dsw-alias-interactive-bg-hover-accent: #5aa2ea1a;
+  --dsw-alias-button-ghost-active-border: var(--mahai-blue-400);
+  --dsw-alias-state-idle-primary: var(--mahai-blue-400);
+  --dsh-boot-brand: var(--mahai-blue-400);
+}
+
+/* ---------- راست‌چین‌سازی کلی ---------- */
+html[lang="fa"] body {
+  font-family: 'Vazirmatn', -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0;
+}
+
+/* عناصری که باید چپ‌چین/چپ‌به‌راست بمانند */
+html[lang="fa"] pre,
+html[lang="fa"] code,
+html[lang="fa"] kbd,
+html[lang="fa"] samp,
+html[lang="fa"] .hljs,
+html[lang="fa"] textarea[class*="terminal"],
+html[lang="fa"] [data-slot="terminal"] {
+  direction: ltr !important;
+  text-align: left !important;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, 'Courier New', monospace !important;
+}
+
+/* فیلدهای تایپ: راست‌چین برای فارسی، اما اگر کاربر کد تایپ کرد مرورگر خودش هندل می‌کند */
+html[lang="fa"] input[type="text"],
+html[lang="fa"] input[type="search"],
+html[lang="fa"] input:not([type]),
+html[lang="fa"] textarea {
+  font-family: inherit;
+}
+
+/* نوار پیمایش عمودی باید در RTL سمت چپ نماند — اصلاح چیدمان‌های شکننده */
+html[lang="fa"] [dir="rtl"] [data-sidebar],
+html[lang="fa"] [dir="rtl"] aside {
+  text-align: right;
+}
+
+/* اعداد و شناسه‌ها در جدول‌ها خوانا بمانند */
+html[lang="fa"] [data-mahai-ltr] {
+  direction: ltr;
+  text-align: left;
+}
+
+/* ---------- برند ماه‌ای در نوار کناری ---------- */
+#mahai-brandbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 6px;
+  user-select: none;
+}
+#mahai-brandbar img {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 18%);
+}
+#mahai-brandbar .mahai-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--dsw-alias-label-primary, #0f1115);
+  line-height: 1.2;
+}
+#mahai-brandbar .mahai-sub {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--dsw-alias-label-tertiary, #61666b);
+  line-height: 1.4;
+}
+body[data-ds-dark-theme] #mahai-brandbar .mahai-name { color: #f9fafb; }
+body[data-ds-dark-theme] #mahai-brandbar .mahai-sub { color: #81858c; }
+
+/* درام اسکرول داخلی پنجره‌ها در حالت RTL */
+html[lang="fa"] ::-webkit-scrollbar { width: 10px; height: 10px; }
+html[lang="fa"] ::-webkit-scrollbar-thumb { background: #00000026; border-radius: 6px; }

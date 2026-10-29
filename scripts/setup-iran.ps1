@@ -76,12 +76,30 @@ if ($env:PROXY) {
     $env:NO_PROXY    = "localhost,127.0.0.1,registry.npmjs.ir"
 }
 
-# ---------- ۵) اجرای dsh ----------
+# ---------- ۵) بومی‌سازی رابط وب (فارسی‌سازی + تم آبی ماه‌ای) ----------
+# لایهٔ ماه‌ای روی dist فرانت‌اند نصب‌شدهٔ dsh اعمال می‌شود.
+# ابتدا کش npx را «گرم» می‌کنیم تا بسته دانلود شده باشد، سپس پچ:
+$Patch = Join-Path $PSScriptRoot 'patch-mahai-ui.ps1'
+
+Write-Log "آماده‌سازی موتور (دانلود dsh در صورت نیاز — ممکن است طول بکشد)…"
+& npx -y "@deepseek-ai/dsh" --version 2>$null | Out-Null
+
+if (Test-Path $Patch) {
+    Write-Log "اعمال پوستهٔ فارسی ماه‌ای روی رابط وب…"
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $Patch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "پوستهٔ ماه‌ای اعمال نشد؛ بعد از این اجرا یک‌بار بزنید: powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1"
+    }
+}
+
+# ---------- ۶) اجرای dsh ----------
 Write-Log "همه تنظیمات انجام شد. اجرای موتور ماه‌ای (dsh web)…"
 Write-Host ""
 Write-Host "  دستور: npx @deepseek-ai/dsh web"
 Write-Host "  آدرس پس از اجرا: http://127.0.0.1:3080"
 Write-Host ""
 Write-Log "نکته: اولین اجرا ممکن است چند دقیقه طول بکشد (دانلود بسته). تا لاگ گوش‌دادن سرور ظاهر نشده، مرورگر ERR_CONNECTION_REFUSED می‌دهد — نگران نباشید، صبر کنید و بعد Reload بزنید."
+Write-Host ""
+Write-Log "اگر روزی رابط انگلیسی شد (به‌روزرسانی dsh)، یک‌بار بزنید: powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1"
 Write-Host ""
 npx -y "@deepseek-ai/dsh" web

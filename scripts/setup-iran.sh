@@ -6,7 +6,8 @@
 #   ۱) بررسی Node.js (نسخه ۲۰+)
 #   ۲) تنظیم میرور ایرانی npm برای npm و pnpm
 #   ۳) (اختیاری) تنظیم متغیرهای پروکسی
-#   ۴) اجرای dsh web
+#   ۴) دانلود dsh و اعمال پوستهٔ فارسی ماه‌ای روی رابط وب
+#   ۵) اجرای dsh web
 # استفاده:
 #   bash setup-iran.sh                 # میرور + اجرا
 #   PROXY=http://127.0.0.1:8118 bash setup-iran.sh   # با پروکسی
@@ -14,6 +15,7 @@
 # ============================================================
 set -euo pipefail
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IRAN_MIRROR="https://registry.npmjs.ir/"
 OFFICIAL="https://registry.npmjs.org/"
 
@@ -89,12 +91,24 @@ if [[ -n "${PROXY:-}" ]]; then
   export no_proxy="localhost,127.0.0.1,registry.npmjs.ir"
 fi
 
-# ---------- ۴) اجرای dsh ----------
+# ---------- ۴) بومی‌سازی رابط وب (فارسی‌سازی + تم آبی ماه‌ای) ----------
+# لایهٔ ماه‌ای روی dist فرانت‌اند نصب‌شدهٔ dsh اعمال می‌شود.
+# ابتدا کش npx را «گرم» می‌کنیم تا بسته دانلود شده باشد، سپس پچ:
+log "آماده‌سازی موتور (دانلود dsh در صورت نیاز — ممکن است طول بکشد)…"
+npx -y @deepseek-ai/dsh --version >/dev/null 2>&1 || true
+if [[ -f "$ROOT/scripts/patch-mahai-ui.sh" ]]; then
+  log "اعمال پوستهٔ فارسی ماه‌ای روی رابط وب…"
+  bash "$ROOT/scripts/patch-mahai-ui.sh" || log "پوستهٔ ماه‌ای اعمال نشد؛ بعد از این اجرا دستور زیر را بزنید:"
+fi
+
+# ---------- ۵) اجرای dsh ----------
 log "همه تنظیمات انجام شد. اجرای موتور ماه‌ای (dsh web)…"
 echo ""
 echo "  دستور: npx @deepseek-ai/dsh web"
 echo "  آدرس پس از اجرا: http://127.0.0.1:3080"
 echo ""
 log "نکته: اولین اجرا ممکن است چند دقیقه طول بکشد (دانلود بسته). تا لاگ گوش‌دادن سرور ظاهر نشده، مرورگر ERR_CONNECTION_REFUSED می‌دهد — نگران نباشید، صبر کنید و بعد Reload بزنید."
+echo ""
+log "اگر روزی رابط انگلیسی شد (به‌روزرسانی dsh)، یک‌بار بزنید: bash scripts/patch-mahai-ui.sh"
 echo ""
 exec npx -y @deepseek-ai/dsh web

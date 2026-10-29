@@ -180,6 +180,19 @@ npx @deepseek-ai/dsh web</code></div>
     </details>
 
     <details class="faq">
+      <summary>رابط وب انگلیسی است — چطور فارسی و آبی (ماه‌ای) شود؟</summary>
+      <div class="faq-body">
+        <p>پوستهٔ ماه‌ای را روی رابط اعمال کنید — فارسی‌سازی کامل منوها، راست‌چین (RTL)، فونت وزیرمتن، تم آبی لوگو و نشان شرکت در نوار کناری:</p>
+        <div class="code-block"><code># لینوکس / مک / WSL
+bash scripts/patch-mahai-ui.sh
+
+# ویندوز
+powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1</code></div>
+        <p>سپس مرورگر را با <code>Ctrl+F5</code> تازه‌سازی کنید. اگر پیام «هیچ نصبی پیدا نشد» دیدید، یعنی dsh هنوز دانلود نشده؛ یک‌بار <code>npx @deepseek-ai/dsh web</code> را اجرا کنید تا دانلود شود، سپس پچ را بزنید. اسکریپت <code>setup-iran</code> این گام را به‌صورت خودکار انجام می‌دهد. اگر بعد از به‌روزرسانی dsh رابط دوباره انگلیسی شد، همان دستور را تکرار کنید — اجرای مکرر بی‌ضرر است.</p>
+      </div>
+    </details>
+
+    <details class="faq">
       <summary>الزامات نسخه (engines.dsh) برآورده نمی‌شود</summary>
       <div class="faq-body">
         <p>باندل پلاگین با نسخه dsh شما سازگار نیست — نصب به‌صورت حفاظتی بسته می‌شود. dsh را به‌روز کنید یا نسخه سازگار پلاگین را نصب کنید. «معافیت نسخه» با ریسک خرابی همراه است؛ فقط با آگاهی کامل.</p>

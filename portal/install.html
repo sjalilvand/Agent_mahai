@@ -105,6 +105,17 @@ powershell -ExecutionPolicy Bypass -File scripts\setup-iran.ps1
 PROXY=http://127.0.0.1:8118 bash scripts/setup-iran.sh</code></div>
         </div>
 
+        <div class="step" id="ui-shell">
+          <h3>پوستهٔ فارسی رابط وب (ماه‌ای)</h3>
+          <p>رابط وب پیش‌فرض dsh انگلیسی و چپ‌چین است. اسکریپت <code>patch-mahai-ui</code> پوستهٔ ماه‌ای را روی آن اعمال می‌کند: <b>فارسی‌سازی کامل منوها</b>، <b>راست‌چین (RTL)</b>، فونت وزیرمتن، <b>تم آبی لوگو</b> و نشان «ماه‌ای — ماه‌افزار هوشمند رسا» در نوار کناری. اسکریپت راه‌اندازی این گام را خودکار اجرا می‌کند؛ برای اعمال دستی:</p>
+          <div class="code-block"><code># لینوکس / مک / WSL
+bash scripts/patch-mahai-ui.sh
+
+# ویندوز
+powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1</code></div>
+          <div class="alert info"><span class="ic">ℹ️</span><div>پس از اعمال، مرورگر را با <code>Ctrl+F5</code> تازه‌سازی کنید. اگر به‌روزرسانی dsh رابط را دوباره انگلیسی کند، همین دستور را یک‌بار دیگر بزنید — اجرای مکرر بی‌ضرر است. کد‌ها و ترمینال همیشه چپ‌چین می‌مانند تا مشکلی در تایپ دستورات پیش نیاید.</div></div>
+        </div>
+
         <div class="step" id="verify">
           <h3>تأیید نصب</h3>
           <p>رابط وب باز شد؟ عالی. تست خط فرمانی سریع هم داریم — پاسخ مدل مستقیم در ترمینال چاپ می‌شود:</p>
