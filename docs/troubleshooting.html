@@ -99,6 +99,17 @@ ss -tlnp | grep 3080</code></div>
     </details>
 
     <details class="faq">
+      <summary>قبلاً کار می‌کرد ولی الان دوباره سایت بالا نمی‌آید — پنجره ترمینال را بسته‌ام یا Ctrl+C زده‌ام!</summary>
+      <div class="faq-body">
+        <p>این طبیعی‌ترین حالت است: پنجرهٔ ترمینالی که <code>setup-iran</code> در آن اجرا شده، <b>خودِ سرور است</b>. با بستن پنجره یا فشردن Ctrl+C (پیام <code>Terminate batch job (Y/N)?</code>) موتور خاموش می‌شود و مرورگر دیگر به پورت ۳۰۸۰ دسترسی ندارد. راه‌حل فقط یک خط است:</p>
+        <div class="code-block"><code>.\scripts\setup-iran.bat</code></div>
+        <p>و بعد <b>پنجره را باز نگه دارید</b> (می‌توانید minimize کنید). سپس آدرس کامل چاپ‌شده در ترمینال — یعنی خط <code>dsh web: http://127.0.0.1:3080/?token=...</code> — را در مرورگر باز کنید (هر بار اجرا توکن جدید می‌سازد) و با <code>Ctrl+F5</code> تازه‌سازی کنید. برای بررسی زنده بودن سرور:</p>
+        <div class="code-block"><code>Get-NetTCPConnection -LocalPort 3080 -ErrorAction SilentlyContinue</code></div>
+        <div class="alert info"><span class="ic">ℹ️</span><div>پوستهٔ فارسی ماه‌ای روی کش npx اعمال می‌شود و با اجرای مجدد سرور می‌ماند؛ فقط اگر dsh به‌روزرسانی شود و رابط انگلیسی شود، یک‌بار <code>powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1</code> را بزنید. نسخه‌های جدید <code>setup-iran</code> این پچ را خودکار و قبل از هر اجرا اعمال می‌کنند.</div></div>
+      </div>
+    </details>
+
+    <details class="faq">
       <summary>چطور پروکسی را برای همه ابزارها تنظیم کنم؟</summary>
       <div class="faq-body">
         <p>متغیرهای محیطی استاندارد HTTP — اکثر ابزارها (npm، pnpm، گیت، curl) می‌فهمند:</p>
