@@ -17,6 +17,15 @@
 
   var TITLE = 'ماه‌ای — عامل هوشمند سازمانی | ماه‌افزار هوشمند رسا';
 
+  /* نسخهٔ پوستهٔ فارسی — با هر انتشار +۱ می‌شود. در نوار برند سایدبار نمایش
+     داده می‌شود تا کاربر ببیند کدام نسخه در مرورگرش اجراست (تشخیص کش). */
+  var SKIN_VER = '7';
+  try {
+    window.__MAHAI_SKIN = SKIN_VER;
+    console.log('%c ماه‌ای — پوستهٔ فارسی نسخهٔ ' + SKIN_VER + ' ',
+      'background:#1d4ed8;color:#fff;border-radius:4px;font-weight:bold');
+  } catch (e) { /* خاموش */ }
+
   /* ---------- ۲) دیکشنری رابط ---------- */
   var D = {
     /* نوار کناری و ناوبری */
@@ -311,6 +320,20 @@
     'Export session log': 'خروجی گرفتن از گزارش گفت‌وگو',
     'Export session log as ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
 
+    /* رشته‌های «دقیق» منوی «+» — استخراج‌شده از سورس dsh
+       (packages/client/ui-commands/src/client/locales.ts + کاتالوگ موتور) */
+    'Compact': 'فشرده‌سازی',
+    'Set or view the goal for a long-running task': 'تنظیم یا مشاهدهٔ هدفِ کار بلندمدت',
+    'Record feedback about this session': 'ثبت بازخورد دربارهٔ این گفت‌وگو',
+    'Compact older conversation history': 'فشرده‌سازی تاریخچهٔ پیشین گفت‌وگو',
+    'Switch the permission preset (sandbox mode + approval policy)': 'تغییر پیش‌تنظیم مجوز (حالت سندباکس + سیاست تأیید)',
+    'Download this Session log as a ZIP archive': 'دانلود گزارش این گفت‌وگو به‌صورت ZIP',
+    'Applying…': 'در حال اعمال…',
+    'No options': 'گزینه‌ای نیست',
+    'Session log download requested.': 'دانلود گزارش گفت‌وگو درخواست شد.',
+    'The Web /export command does not accept a path.': 'دستور /export در وب مسیر نمی‌پذیرد.',
+    'Upload from your computer': 'بارگذاری از رایانهٔ شما',
+
     /* صفحهٔ بوت (پیش از رندر React) */
     'HARNESS': 'ماه‌ای',
     'DEEPSEEK': 'ماه‌ای',
@@ -396,6 +419,23 @@
     '截图': 'نماگرفت',
     '导出会话日志为 ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
     '导出会话日志为ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
+    /* رشته‌های چینی کاتالوگ موتور برای ردیف‌های file/model/history و بخش command */
+    '压缩': 'فشرده‌سازی',
+    '将当前会话内容导出为 ZIP': 'خروجی گرفتن از محتوای گفت‌وگو به‌صورت ZIP',
+    '设置或查看长期任务目标': 'تنظیم یا مشاهدهٔ هدف کار بلندمدت',
+    '进入或退出计划模式': 'ورود یا خروج از حالت برنامه‌ریزی',
+    '发送关于当前会话的反馈': 'ارسال بازخورد دربارهٔ این گفت‌وگو',
+    '压缩以上对话内容': 'فشرده‌سازی گفت‌وگوهای پیشین',
+    '切换权限预设（沙箱模式与审批策略）': 'تغییر پیش‌تنظیم مجوز (حالت سندباکس + سیاست تأیید)',
+    '正在加载选项…': 'در حال بارگذاری گزینه‌ها…',
+    '正在应用…': 'در حال اعمال…',
+    '无选项': 'گزینه‌ای نیست',
+    '添加文件': 'افزودن فایل',
+    '上传文件': 'بارگذاری فایل',
+    '选择模型': 'انتخاب مدل',
+    '切换模型': 'تغییر مدل',
+    '查看历史会话': 'مشاهدهٔ گفت‌وگوهای پیشین',
+    '浏览历史会话': 'مرور گفت‌وگوهای پیشین',
 
     /* --- پنل ابزارهای فضای کاری و نوار وضعیت --- */
     'Workspace files': 'فایل‌های فضای کاری',
@@ -435,7 +475,26 @@
     [/^in (\d+(?:[.,]\d+)?[hms]?)$/u, function (m) { return 'در ' + m[1]; }],
     [/^(\d+(?:[.,]\d+)?)s$/u, function (m) { return m[1] + ' ثانیه'; }],
     [/^(\d+(?:[.,]\d+)?)m$/u, function (m) { return m[1] + ' دقیقه'; }],
-    [/^tok\/s$/u, function () { return 'توکن/ث'; }]
+    [/^tok\/s$/u, function () { return 'توکن/ث'; }],
+
+    /* واژه‌های کوتاه منو — تطبیق بدون توجه به بزرگ/کوچکی نویسه‌ها و فاصلهٔ اضافه؛
+       فقط وقتی «کل» گرهِ متنی همین یک واژه باشد اجرا می‌شود (تطبیق لنگرشده). */
+    [/^\s*(add|file|goal|plan|feedback|commands?|history|permissions?|compact|export|model|insert|image|screenshot)\s*$/iu, function (m) {
+      var w = m[1].toLowerCase();
+      if (w === 'commands') return 'دستورها';
+      if (w === 'command') return 'دستور';
+      if (w === 'permissions') return 'مجوزها';
+      var map = {
+        add: 'افزودن', file: 'فایل', goal: 'هدف', plan: 'برنامه', feedback: 'بازخورد',
+        history: 'تاریخچه', permission: 'مجوز', compact: 'فشرده‌سازی', export: 'خروجی',
+        model: 'مدل', insert: 'درج', image: 'تصویر', screenshot: 'نماگرفت'
+      };
+      return map[w] || null;
+    }],
+
+    /* نوار وضعیت: «1 tok/s» و «1%» به‌صورت یک گره واحد */
+    [/^\s*(\d+(?:[.,]\d+)?)\s*tok\/s\s*$/u, function (m) { return m[1] + ' توکن/ث'; }],
+    [/^\s*(\d+(?:[.,]\d+)?)\s*%\s*$/u, function (m) { return m[1] + '٪'; }]
   ];
 
   /* ---------- ۴) مترجم گرهٔ متنی ---------- */
@@ -557,7 +616,8 @@
     bar.innerHTML =
       '<img src="./mahai/logo.png" alt="ماه‌ای" />' +
       '<div><span class="mahai-name">ماه‌ای</span>' +
-      '<span class="mahai-sub">ماه‌افزار هوشمند رسا</span></div>';
+      '<span class="mahai-sub">ماه‌افزار هوشمند رسا</span>' +
+      '<span class="mahai-ver">پوستهٔ فارسی ' + SKIN_VER + '</span></div>';
     aside.insertBefore(bar, aside.firstChild);
   }
 

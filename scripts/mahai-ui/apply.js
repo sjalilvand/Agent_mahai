@@ -17,6 +17,17 @@ const OVERLAY = __dirname; // پوشهٔ mahai-ui
 const MARKER = '<!-- ماه‌ای (MahAI) overlay -->';
 const TITLE = 'ماه‌ای — عامل هوشمند سازمانی | ماه‌افزار هوشمند رسا';
 
+/* متای ضدکش — بعد از یک بار بارگذاریِ تازه، مرورگر دیگر index.html را کش نمی‌کند */
+const NO_CACHE_META =
+  '    <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />\n' +
+  '    <meta http-equiv="Pragma" content="no-cache" />\n' +
+  '    <meta http-equiv="Expires" content="0" />\n';
+
+function ensureNoCacheMeta(html) {
+  if (/http-equiv=["']?cache-control/i.test(html)) return html;
+  return html.replace(/<head([^>]*)>/i, (m) => `${m}\n${NO_CACHE_META}`);
+}
+
 function copyOverlay(dist) {
   const dst = path.join(dist, 'mahai');
   fs.mkdirSync(dst, { recursive: true });
@@ -45,6 +56,9 @@ function patchIndex(dist) {
     if (!/html[^>]*\blang="fa"/.test(html)) { html = html.replace(/(<html[^>]*\blang=")[^"]*(")/i, '$1fa$2'); changed = true; }
     if (!/<html[^>]*\bdir="rtl"/.test(html)) { html = html.replace(/<html([^>]*)>/i, '<html$1 dir="rtl">'); changed = true; }
     if (!html.includes(TITLE)) { html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${TITLE}</title>`); changed = true; }
+    const before = html;
+    html = ensureNoCacheMeta(html);
+    if (html !== before) changed = true;
     const reStamp = (s) => {
       const next = s
         .replace(/(mahai\.css)(\?v=[a-z0-9]+)?/g, `$1?v=${stamp}`)
@@ -53,7 +67,8 @@ function patchIndex(dist) {
     };
     html = reStamp(html);
     if (changed) fs.writeFileSync(p, html);
-    return { patched: changed, fresh: false };
+    console.log(`[ماه‌ای] نسخهٔ مهر زمانی: ${stamp}`);
+    return { patched: changed, fresh: false, stamp };
   }
 
   // ۱) زبان و جهت
@@ -68,8 +83,9 @@ function patchIndex(dist) {
     html = html.replace(/(<html[^>]*\bdir=")[^"]*(")/i, '$1rtl$2');
   }
 
-  // ۲) عنوان
+  // ۲) عنوان و متای ضدکش
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${TITLE}</title>`);
+  html = ensureNoCacheMeta(html);
 
   // ۳) فاوآیکن ماه‌ای
   html = html.replace(/<link\s+rel="icon"[^>]*>/gi,
@@ -81,7 +97,8 @@ function patchIndex(dist) {
   html = html.replace(/<\/head>/i, `  ${inject}</head>`);
 
   fs.writeFileSync(p, html);
-  return { patched: true, fresh: true };
+  console.log(`[ماه‌ای] نسخهٔ مهر زمانی: ${stamp}`);
+  return { patched: true, fresh: true, stamp };
 }
 
 function main() {
@@ -92,7 +109,14 @@ function main() {
   }
   copyOverlay(dist);
   const r = patchIndex(dist);
+  /* فایل نسخه — کاربر می‌تواند http://127.0.0.1:3080/mahai/version.txt را باز کند
+     و مطمئن شود سرور همین نسخه را سرو می‌کند. */
+  try {
+    fs.writeFileSync(path.join(dist, 'mahai', 'version.txt'),
+      `mahai-skin stamp: ${r.stamp}\nbuilt: ${new Date().toISOString()}\n`);
+  } catch (e) { /* غیربحرانی */ }
   console.log(`[ماه‌ای] بومی‌سازی رابط اعمال شد: ${dist}${r.fresh ? ' (پچ تازه)' : ' (از قبل پچ‌شده)'}`);
+  console.log(`[ماه‌ای] بررسی نسخهٔ سروشده در مرورگر: http://127.0.0.1:3080/mahai/version.txt`);
 }
 
 main();

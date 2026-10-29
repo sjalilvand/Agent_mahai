@@ -46,4 +46,7 @@ foreach ($t in $targets) {
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "[ماه‌ای] ✓ بومی‌سازی روی $($targets.Count) نصب اعمال شد. مرورگر را با Ctrl+F5 تازه‌سازی کنید." -ForegroundColor Green
+Write-Host "[ماه‌ای] ✓ بومی‌سازی روی $($targets.Count) نصب اعمال شد." -ForegroundColor Green
+Write-Host "[ماه‌ای] برای تازه‌سازی: در پنجرهٔ برنامه Ctrl+F5 بزنید."
+Write-Host "[ماه‌ای] آزمون مطمئن: پنجرهٔ ناشناس (InPrivate) باز کنید و آدرس توکن‌دار ترمینال را در آن بچسبانید."
+Write-Host "[ماه‌ای] اگر در برند سایدبار «پوستهٔ فارسی ۷» دیدید، نسخهٔ جدید فعال است."
