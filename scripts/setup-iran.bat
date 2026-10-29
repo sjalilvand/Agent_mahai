@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM setup-iran.bat - One-click Windows launcher for setup-iran.ps1
+REM setup-iran.bat - MahAI (Mah Afzar Hooshmand Rasa Co.) one-click launcher
 REM ------------------------------------------------------------
 REM It bypasses the PowerShell ExecutionPolicy automatically, so
 REM you never see "running scripts is disabled on this system".

@@ -1,5 +1,5 @@
 /* ============================================================
-   پورتال عامل‌های هوشمند ایران — Agent_mahai
+   پورتال ماه‌ای — شرکت ماه‌افزار هوشمند رسا
    سبک: ایرانی مدرن — سبز پرچم + اکسنت قرمز + فونت وزیرمتن
    کاملاً آفلاین (فونت محلی، بدون CDN خارجی)
    ============================================================ */
@@ -393,4 +393,15 @@ details.faq .faq-body .code-block { margin-top: 10px; }
 @media print {
   .site-header, .site-footer, .hero-actions, .cta-band { display: none; }
   body { background: #fff; }
+}
+
+/* ---------- برند ماه‌ای: ارم در هدر ---------- */
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #fff;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 2px 10px rgba(11, 61, 35, .18);
 }

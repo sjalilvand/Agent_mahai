@@ -1,5 +1,5 @@
 ﻿# ============================================================
-# setup-iran.ps1 — اسکریپت بومی‌سازی ایران برای ویندوز
+# setup-iran.ps1 — اسکریپت راه‌اندازی ماه‌ای برای ویندوز (شرکت ماه‌افزار هوشمند رسا)
 # DeepSeek Harness (dsh)
 # ------------------------------------------------------------
 # استفاده (در PowerShell):
@@ -14,11 +14,11 @@ param(
 $IranMirror = "https://registry.npmjs.ir/"
 $Official   = "https://registry.npmjs.org/"
 
-function Write-Log($msg)  { Write-Host "[Agent_mahai]" -ForegroundColor Green -NoNewline; Write-Host " $msg" }
+function Write-Log($msg)  { Write-Host "[ماه‌ای]" -ForegroundColor Green -NoNewline; Write-Host " $msg" }
 function Write-Err($msg)  { Write-Host "[خطا]" -ForegroundColor Red   -NoNewline; Write-Host " $msg" }
 
 Write-Host "============================================================"
-Write-Host "  بومی‌سازی ایران برای DeepSeek Harness (dsh)"
+Write-Host "  ماه‌ای (MahAI) — عامل هوشمند سازمانی | شرکت ماه‌افزار هوشمند رسا"
 Write-Host "  https://github.com/sjalilvand/Agent_mahai"
 Write-Host "============================================================"
 
@@ -77,7 +77,7 @@ if ($env:PROXY) {
 }
 
 # ---------- ۵) اجرای dsh ----------
-Write-Log "همه تنظیمات انجام شد. اجرای dsh web…"
+Write-Log "همه تنظیمات انجام شد. اجرای موتور ماه‌ای (dsh web)…"
 Write-Host ""
 Write-Host "  دستور: npx @deepseek-ai/dsh web"
 Write-Host "  آدرس پس از اجرا: http://127.0.0.1:3080"
