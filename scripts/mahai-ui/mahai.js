@@ -352,7 +352,19 @@
     '确认': 'تأیید',
     '删除': 'حذف',
     '重命名': 'تغییر نام',
-    '开始': 'شروع'
+    '开始': 'شروع',
+
+    /* --- پنل ابزارهای فضای کاری و نوار وضعیت --- */
+    'Workspace files': 'فایل‌های فضای کاری',
+    "Browse files in this session's workspace": 'مرور فایل‌های فضای کاری این گفت‌وگو',
+    'Browse files in this session\u2019s workspace': 'مرور فایل‌های فضای کاری این گفت‌وگو',
+    'New terminal': 'پایانهٔ جدید',
+    'Run commands in the Session workspace': 'اجرای دستورها در فضای کاری گفت‌وگو',
+    'More tools': 'ابزارهای بیشتر',
+    'commands, @ files or sessions': 'دستورها، @فایل‌ها یا گفت‌وگوها',
+    '… commands, @ files or sessions': '… دستورها، @فایل‌ها یا گفت‌وگوها',
+    'Completed': 'انجام شد',
+    '…tok/s': '…توکن/ث'
   };
 
   /* ---------- ۳) قواعد الگویی (برای رشته‌های پویا) ---------- */
@@ -374,7 +386,13 @@
     [/^(Search|Filter) (models|sessions|options)…?$/u, function (m) {
       var o = { models: 'مدل‌ها', sessions: 'گفت‌وگوها', options: 'گزینه‌ها' };
       return (m[1] === 'Search' ? 'جست‌وجوی ' : 'پالایش ') + o[m[2]] + '…';
-    }]
+    }],
+    /* «Completed in 12s» گاهی به چند گرهٔ جدا می‌شکند — تکه‌ها را هم پوشش بده */
+    [/^Completed in$/u, function () { return 'انجام شد در'; }],
+    [/^in (\d+(?:[.,]\d+)?[hms]?)$/u, function (m) { return 'در ' + m[1]; }],
+    [/^(\d+(?:[.,]\d+)?)s$/u, function (m) { return m[1] + ' ثانیه'; }],
+    [/^(\d+(?:[.,]\d+)?)m$/u, function (m) { return m[1] + ' دقیقه'; }],
+    [/^tok\/s$/u, function () { return 'توکن/ث'; }]
   ];
 
   /* ---------- ۴) مترجم گرهٔ متنی ---------- */
@@ -533,6 +551,84 @@
     }
   }
 
+  /* ---------- ۵٫۶) اصلاح نسبت پنل‌ها در حالت راست‌چین ----------
+     در RTL گاهی پنل گفت‌وگو له می‌شود و پنل ابزارها/فضای خالی کل صفحه را می‌گیرد.
+     این اصلاح‌گر، پنل گفت‌وگو را عریض و پنل ابزارها را باریک (۳۶۰px) می‌کند. */
+  function isSidebarish(el) {
+    if (!el || el.nodeType !== 1) return true;
+    if (el === document.body || el === html) return true;
+    var tag = el.nodeName;
+    if (tag === 'ASIDE' || tag === 'NAV' || tag === 'HEADER' || tag === 'FOOTER') return true;
+    if (el.getAttribute && (el.getAttribute('data-sidebar') !== null || el.getAttribute('role') === 'navigation')) return true;
+    if (el.querySelector && (el.querySelector('[data-sidebar]') || el.querySelector('#mahai-brandbar'))) return true;
+    var cl = (el.getAttribute && el.getAttribute('class')) || '';
+    if (/sidebar|side-bar|navigation/i.test(cl)) return true;
+    return false;
+  }
+  function fixChatLayout() {
+    var composer = document.querySelector('textarea, [contenteditable="true"]');
+    if (!composer) return;
+
+    var row = null, chatPane = null, toolsPane = null;
+
+    /* راهبرد ۱ — پنل ابزارها از روی متن دکمه‌هایش پیدا می‌شود (دقیق‌ترین) */
+    var cand = document.querySelectorAll('button, div[role="button"], a');
+    var toolBtn = null;
+    for (var i = 0; i < cand.length; i++) {
+      var tx = cand[i].textContent || '';
+      if (/Workspace files|فایل‌های فضای کاری/.test(tx)) { toolBtn = cand[i]; break; }
+    }
+    if (toolBtn) {
+      var a = composer, b = toolBtn;
+      while (a && a !== document.body && !a.contains(b)) a = a.parentElement;
+      if (a && a !== document.body) {
+        row = a;
+        while (row && row.children.length === 1 && row.firstElementChild) row = row.firstElementChild;
+      }
+      if (row && row !== document.body) {
+        chatPane = null; toolsPane = null;
+        var kids = row.children;
+        for (var k = 0; k < kids.length; k++) {
+          if (kids[k].contains(composer)) chatPane = kids[k];
+          else if (kids[k].contains(toolBtn)) toolsPane = kids[k];
+        }
+      }
+    }
+
+    /* راهبرد ۲ — از سمت ورودی پیام به بالاترین جدِ مفید (پشتیبان) */
+    if (!chatPane || !toolsPane) {
+      var pane = composer, parent = pane.parentElement, found = null;
+      while (parent && parent !== document.body) {
+        var wide = 0, other = null;
+        for (var j = 0; j < parent.children.length; j++) {
+          var c = parent.children[j];
+          if (c === pane || isSidebarish(c)) continue;
+          var r = c.getBoundingClientRect();
+          if (r.width > 200 && r.height > 200) { wide++; other = other || c; }
+        }
+        if (wide >= 1 && other) { found = parent; break; }
+        pane = parent; parent = pane.parentElement;
+      }
+      if (found) {
+        row = found; chatPane = pane; toolsPane = other;
+      }
+    }
+
+    if (!row || !chatPane || !toolsPane || row === document.body) return;
+    var rr = row.getBoundingClientRect();
+    var cr = chatPane.getBoundingClientRect();
+    if (rr.width < 300 || cr.width > rr.width * 0.5) return; /* گفت‌وگو از قبل عریض است */
+
+    chatPane.style.flex = '1 1 auto';
+    chatPane.style.width = 'auto';
+    chatPane.style.minWidth = '0';
+    chatPane.style.maxWidth = 'none';
+    toolsPane.style.flex = '0 0 auto';
+    toolsPane.style.width = 'min(360px, 32vw)';
+    toolsPane.style.minWidth = '0';
+    toolsPane.style.overflow = 'hidden auto';
+  }
+
   function applyTitle() {
     if (document.title && document.title.indexOf('ماه‌ای') === -1) document.title = TITLE;
   }
@@ -547,7 +643,7 @@
         /* React گاهی lang/dir را بازنویسی می‌کند — همیشه اعلام دوباره کن */
         if (html.getAttribute('lang') !== 'fa') html.setAttribute('lang', 'fa');
         if (html.getAttribute('dir') !== 'rtl') html.setAttribute('dir', 'rtl');
-        applyTitle(); walk(document.body); translateAttrs(document.body); injectBrand(); injectHero();
+        applyTitle(); walk(document.body); translateAttrs(document.body); injectBrand(); injectHero(); fixChatLayout();
       }
       catch (e) { /* خاموش — هرگز رابط را نشکن */ }
     }, 60);
@@ -559,6 +655,7 @@
     translateAttrs(document.body);
     injectBrand();
     injectHero();
+    fixChatLayout();
     new MutationObserver(schedule).observe(document.body, {
       childList: true, subtree: true, characterData: true
     });
