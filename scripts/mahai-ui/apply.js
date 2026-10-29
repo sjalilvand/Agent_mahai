@@ -37,12 +37,21 @@ function copyOverlay(dist) {
 function patchIndex(dist) {
   const p = path.join(dist, 'index.html');
   let html = fs.readFileSync(p, 'utf8');
+  /* مهر نسخه برای شکستن کش مرورگر — هر بار پچ، css/js تازه بارگذاری می‌شود */
+  const stamp = Date.now().toString(36);
   if (html.includes(MARKER)) {
-    // قبلاً پچ شده — فقط اگر lang یا title عوض شده بود اصلاح کن
+    // قبلاً پچ شده — lang/title را اصلاح کن و نسخهٔ css/js را تازه کن
     let changed = false;
     if (!/html[^>]*\blang="fa"/.test(html)) { html = html.replace(/(<html[^>]*\blang=")[^"]*(")/i, '$1fa$2'); changed = true; }
     if (!/<html[^>]*\bdir="rtl"/.test(html)) { html = html.replace(/<html([^>]*)>/i, '<html$1 dir="rtl">'); changed = true; }
     if (!html.includes(TITLE)) { html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${TITLE}</title>`); changed = true; }
+    const reStamp = (s) => {
+      const next = s
+        .replace(/(mahai\.css)(\?v=[a-z0-9]+)?/g, `$1?v=${stamp}`)
+        .replace(/(mahai\.js)(\?v=[a-z0-9]+)?/g, `$1?v=${stamp}`);
+      return next !== s ? (changed = true, next) : next;
+    };
+    html = reStamp(html);
     if (changed) fs.writeFileSync(p, html);
     return { patched: changed, fresh: false };
   }
@@ -66,9 +75,9 @@ function patchIndex(dist) {
   html = html.replace(/<link\s+rel="icon"[^>]*>/gi,
     '<link rel="icon" type="image/png" href="./mahai/favicon.png" />');
 
-  // ۴) تزریق css/js پیش از </head>
-  const inject = `${MARKER}\n    <link rel="stylesheet" href="./mahai/mahai.css" />\n` +
-    `    <script src="./mahai/mahai.js"></script>\n  `;
+  // ۴) تزریق css/js پیش از </head> (با مهر نسخه)
+  const inject = `${MARKER}\n    <link rel="stylesheet" href="./mahai/mahai.css?v=${stamp}" />\n` +
+    `    <script src="./mahai/mahai.js?v=${stamp}"></script>\n  `;
   html = html.replace(/<\/head>/i, `  ${inject}</head>`);
 
   fs.writeFileSync(p, html);

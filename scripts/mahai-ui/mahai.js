@@ -306,7 +306,53 @@
     'Add files or run commands': 'افزودن فایل یا اجرای دستورات',
 
     /* متن دیالوگ شروع */
-    'Sign in to your DeepSeek account or add an API Key to get started. Your projects and files are stored locally.': 'برای شروع، به حساب DeepSeek خود وارد شوید یا کلید API اضافه کنید. پروژه‌ها و فایل‌های شما به‌صورت محلی ذخیره می‌شوند.'
+    'Sign in to your DeepSeek account or add an API Key to get started. Your projects and files are stored locally.': 'برای شروع، به حساب DeepSeek خود وارد شوید یا کلید API اضافه کنید. پروژه‌ها و فایل‌های شما به‌صورت محلی ذخیره می‌شوند.',
+
+    /* --- رشته‌های پویا از موتور (صفحهٔ آغازین، ورودی هدف، دکمه‌ها) --- */
+    '/goal describe the objective for a long-running task': '/goal هدفِ کارِ بلندمدت را شرح دهید',
+    'describe the objective for a long-running task': 'هدفِ کارِ بلندمدت را شرح دهید',
+    'Describe the objective for a long-running task': 'هدفِ کارِ بلندمدت را شرح دهید',
+    'Set as default': 'پیش‌فرض کن',
+    'Use default': 'استفاده از پیش‌فرض',
+    'Make default': 'پیش‌فرض کن',
+    'Set default workspace': 'فضای کاری پیش‌فرض',
+    'Start': 'شروع',
+    'Start task': 'شروع کار',
+    'New task': 'کار جدید',
+    'Stop': 'توقف',
+    'Approve': 'تأیید',
+    'Reject': 'رد کردن',
+    'Resume': 'از سرگیری',
+    'Cancel': 'لغو',
+    'Confirm': 'تأیید',
+    'Open folder': 'باز کردن پوشه',
+    'Choose folder': 'انتخاب پوشه',
+    'Change workspace': 'تغییر فضای کاری',
+    'What is your goal?': 'هدفتان چیست؟',
+    'Describe your goal': 'هدف خود را شرح دهید',
+    'Type your message…': 'پیام خود را بنویسید…',
+    'Type a message': 'پیامی بنویسید',
+
+    /* --- رشته‌های چینی (پیش‌فرض‌های موتور DeepSeek) --- */
+    '默认工作区': 'فضای کاری پیش‌فرض',
+    '工作区': 'فضای کاری',
+    '新建工作区': 'افزودن فضای کاری',
+    '选择工作区': 'انتخاب فضای کاری',
+    '新会话': 'گفت‌وگوی جدید',
+    '会话': 'گفت‌وگو',
+    '设置': 'تنظیمات',
+    '插件': 'افزونه‌ها',
+    '发送': 'ارسال',
+    '停止': 'توقف',
+    '搜索': 'جست‌وجو',
+    '更多': 'بیشتر',
+    '模型': 'مدل',
+    '默认': 'پیش‌فرض',
+    '取消': 'لغو',
+    '确认': 'تأیید',
+    '删除': 'حذف',
+    '重命名': 'تغییر نام',
+    '开始': 'شروع'
   };
 
   /* ---------- ۳) قواعد الگویی (برای رشته‌های پویا) ---------- */
@@ -344,11 +390,15 @@
     return null;
   }
 
-  var SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'KBD', 'SAMP', 'TEXTAREA']);
-  function shouldSkip(el) {
+  var SKIP_TEXT = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'KBD', 'SAMP', 'TEXTAREA']);
+  /* برای ویژگی‌ها (placeholder و…) textarea نباید رد شود — محتوای کاربر دست‌نخورده می‌ماند،
+     فقط برچسب راهنما ترجمه می‌شود. */
+  var SKIP_ATTR = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'KBD', 'SAMP']);
+  function shouldSkip(el, set) {
+    var s = set || SKIP_TEXT;
     var n = el;
     while (n && n !== html) {
-      if (SKIP.has(n.nodeName)) return true;
+      if (s.has(n.nodeName)) return true;
       if (n.nodeType === 1) {
         var cl = n.getAttribute && n.getAttribute('class');
         if (typeof cl === 'string' && /hljs|token|monaco|cm-|highlight/.test(cl)) return true;
@@ -363,7 +413,7 @@
       acceptNode: function (node) {
         if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
         var p = node.parentElement;
-        if (!p || shouldSkip(p)) return NodeFilter.FILTER_REJECT;
+        if (!p || shouldSkip(p, SKIP_TEXT)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -377,15 +427,28 @@
   }
 
   function translateAttrs(root) {
-    var els = root.querySelectorAll('input[placeholder],textarea[placeholder],[aria-label],[title]');
+    var els = root.querySelectorAll('input[placeholder],textarea[placeholder],[aria-label],[title],[data-placeholder]');
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (shouldSkip(el)) continue;
-      ['placeholder', 'aria-label', 'title'].forEach(function (a) {
+      if (shouldSkip(el, SKIP_ATTR)) continue;
+      ['placeholder', 'aria-label', 'title', 'data-placeholder'].forEach(function (a) {
         var v = el.getAttribute && el.getAttribute(a);
         if (!v) return;
-        var fa = translateText(v);
-        if (fa) el.setAttribute(a, fa);
+        var fa;
+        /* پیشوندهای دستوری مثل «/goal» باید سرِ جایشان بمانند — فقط توضیح فارسی می‌شود */
+        if (/^\/goal\b/i.test(v)) {
+          var rest = v.replace(/^\/goal\s*/i, '');
+          if (/^describe the objective for a long-running task$/i.test(rest)) {
+            fa = '/goal هدفِ کارِ بلندمدت را شرح دهید';
+          } else if (/^describe/i.test(rest)) {
+            fa = '/goal هدف را شرح دهید…';
+          } else {
+            fa = null; /* متن ناشناخته — دست نمی‌زنیم */
+          }
+        } else {
+          fa = translateText(v);
+        }
+        if (fa && fa !== v) el.setAttribute(a, fa);
       });
     }
   }
@@ -437,6 +500,39 @@
     aside.insertBefore(bar, aside.firstChild);
   }
 
+  /* ---------- ۵٫۵) نشان ماه‌ای در قهرمان صفحهٔ آغازین ----------
+     جای نهنگ پنهان‌شدهٔ DeepSeek، ارم ماه‌ای می‌نشیند و زیر تیتر،
+     نام شرکت می‌آید — تا صفحهٔ خوش‌آمد کاملاً «ماه‌افزار هوشمند رسا» شود. */
+  function injectHero() {
+    var cand = document.querySelectorAll('h1,h2');
+    for (var i = 0; i < cand.length; i++) {
+      var t = (cand[i].textContent || '').trim();
+      if (!t || t.length > 60) continue;
+      if (!/^(سفر به ناشناخته‌ها|Into the Unknown)$/.test(t)) continue;
+      var host = cand[i].parentElement;
+      if (!host || host === document.body) return;
+
+      if (!document.getElementById('mahai-hero')) {
+        var hero = document.createElement('div');
+        hero.id = 'mahai-hero';
+        hero.setAttribute('dir', 'rtl');
+        hero.innerHTML =
+          '<img src="./mahai/logo.png" alt="ارم ماه‌ای" />' +
+          '<div class="mahai-hero-name">ماه‌ای</div>';
+        host.insertBefore(hero, cand[i]);
+      }
+      if (!document.getElementById('mahai-hero-tag')) {
+        var tag = document.createElement('div');
+        tag.id = 'mahai-hero-tag';
+        tag.setAttribute('dir', 'rtl');
+        tag.textContent = 'محصول شرکت ماه‌افزار هوشمند رسا';
+        if (cand[i].nextSibling) host.insertBefore(tag, cand[i].nextSibling);
+        else host.appendChild(tag);
+      }
+      return;
+    }
+  }
+
   function applyTitle() {
     if (document.title && document.title.indexOf('ماه‌ای') === -1) document.title = TITLE;
   }
@@ -451,7 +547,7 @@
         /* React گاهی lang/dir را بازنویسی می‌کند — همیشه اعلام دوباره کن */
         if (html.getAttribute('lang') !== 'fa') html.setAttribute('lang', 'fa');
         if (html.getAttribute('dir') !== 'rtl') html.setAttribute('dir', 'rtl');
-        applyTitle(); walk(document.body); translateAttrs(document.body); injectBrand();
+        applyTitle(); walk(document.body); translateAttrs(document.body); injectBrand(); injectHero();
       }
       catch (e) { /* خاموش — هرگز رابط را نشکن */ }
     }, 60);
@@ -462,6 +558,7 @@
     walk(document.body);
     translateAttrs(document.body);
     injectBrand();
+    injectHero();
     new MutationObserver(schedule).observe(document.body, {
       childList: true, subtree: true, characterData: true
     });
