@@ -1,0 +1,11 @@
+{
+  "name": "dsh-jalali-plugin",
+  "version": "0.1.0",
+  "description": "پلاگین نمونه تقویم شمسی برای دیپ‌سیک هارنس — تبدیل تاریخ جلالی/میلادی (نمونه بومی‌سازی ایران)",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "cordis.patch.yml"],
+  "keywords": ["dsh-plugin", "jalali", "persian-calendar", "iran"],
+  "license": "MIT",
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+}

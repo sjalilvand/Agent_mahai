@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>گردش کار حرفه‌ای گیت — عامل‌های هوشمند ایران</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230E7A3D' d='M50 4 90 27 90 73 50 96 10 73 10 27Z'/%3E%3Cpath fill='%23FAF9F6' d='M50 20 76 35 76 65 50 80 24 65 24 35Z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="#0E7A3D" d="M50 4 90 27 90 73 50 96 10 73 10 27Z"/>
+        <path fill="#FAF9F6" d="M50 20 76 35 76 65 50 80 24 65 24 35Z"/>
+        <path fill="#C62828" d="M50 34 64 42 64 58 50 66 36 58 36 42Z"/>
+      </svg>
+      <span>عامل‌های هوشمند ایران<small>Agent_mahai · نسخه بومی DeepSeek Harness</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">خانه</a>
+      <a href="install.html">نصب</a>
+      <a href="tools.html">ابزارها</a>
+      <a href="plugins.html">پلاگین‌نویسی</a>
+      <a href="troubleshooting.html">رفع مشکلات ایران</a>
+      <a href="git.html">گردش کار گیت</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="crumb"><a href="index.html">خانه</a> / گردش کار گیت</div>
+    <h1>گردش کار حرفه‌ای گیت</h1>
+    <p>مدیریت مخزن Agent_mahai روی سیستم خودتان: کلون، شاخه، commit، push/pull، تعارض و کار تیمی.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <nav class="content-nav">
+      <h4>محتوای این صفحه</h4>
+      <a href="#clone">کلون مخزن</a>
+      <a href="#cycle">چرخه روزمره</a>
+      <a href="#conflict">حل تعارض</a>
+      <a href="#team">کار تیمی</a>
+      <a href="#token">امنیت توکن</a>
+      <a href="#update">به‌روزرسانی dsh</a>
+    </nav>
+
+    <div>
+      <h2 id="clone">کلون مخزن روی سیستم خودتان</h2>
+      <p>نصب گیت، سپس تنظیمات اولیه یک‌باره:</p>
+      <div class="code-block"><code>git config --global user.name "نام شما"
+git config --global user.email "email@example.com"
+git config --global init.defaultBranch main</code></div>
+      <p>کلون ساده (مخزن عمومی):</p>
+      <div class="code-block"><code>git clone https://github.com/sjalilvand/Agent_mahai.git
+cd Agent_mahai</code></div>
+      <p>اگر مخزن خصوصی شد یا برای push مشکل احراز هویت گرفتید، توکن در URL:</p>
+      <div class="code-block"><code>git clone https://&lt;USERNAME&gt;:&lt;TOKEN&gt;@github.com/sjalilvand/Agent_mahai.git</code></div>
+      <div class="alert danger"><span class="ic">⚠️</span><div><b>توکن در URL در .git/config ذخیره می‌شود.</b> برای کار طولانی‌مدت از SSH استفاده کنید (<code>ssh-keygen -t ed25519</code> و افزودن کلید عمومی در Settings → SSH keys) — هیچ توکنی جابه‌جا نمی‌شود.</div></div>
+
+      <h2 id="cycle" style="margin-top:48px">چرخه روزمره: branch → edit → commit → push → pull</h2>
+      <div class="steps">
+        <div class="step">
+          <h3>شاخه بسازید — حتی تنهایی</h3>
+          <p>هر قابلیت/اصلاح یک شاخه؛ main همیشه سالم بماند:</p>
+          <div class="code-block"><code>git switch -c feature/portal-search</code></div>
+          <p>قرارداد نام‌گذاری: <code>feature/</code> قابلیت · <code>fix/</code> اصلاح · <code>docs/</code> مستندات · <code>update/</code> به‌روزرسانی dsh</p>
+        </div>
+        <div class="step">
+          <h3>تغییرات را ثبت کنید</h3>
+          <p>commit کوچک و موضوعی؛ پیام با قالب «نوع: خلاصه»:</p>
+          <div class="code-block"><code>git status
+git add docs-fa/
+git commit -m "docs: به‌روزرسانی آموزش ۰۴ با ابزارهای جدید"</code></div>
+        </div>
+        <div class="step">
+          <h3>دریافت و ارسال</h3>
+          <p>قبل از شروع کار و قبل از push، همیشه pull:</p>
+          <div class="code-block"><code>git pull --rebase origin main
+git push -u origin feature/portal-search</code></div>
+        </div>
+      </div>
+
+      <h2 id="conflict" style="margin-top:48px">حل تعارض بدون استرس</h2>
+      <p>وقتی دو طرف یک خط را عوض کرده باشند، گیت توقف می‌کند و در فایل نشانه‌ها را می‌گذارد: <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> / <code>=======</code> / <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. نسخه درست را دستی بنویسید، نشانه‌ها را حذف کنید و:</p>
+      <div class="code-block"><code>git add &lt;file&gt;
+git rebase --continue        # فرار در وسط راه: git rebase --abort</code></div>
+
+      <h2 id="team" style="margin-top:48px">کار تیمی چندنفره</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>محافظت از main</h3>
+          <p>گیت‌هاب → Settings → Branches → protection: push مستقیم ممنوع، حداقل یک review الزام.</p>
+        </div>
+        <div class="card">
+          <h3>Pull Request برای همه‌چیز</h3>
+          <p>شاخه را push کنید، PR باز کنید، همکار مرور و تأیید کند، سپس Squash merge و حذف شاخه.</p>
+        </div>
+        <div class="card">
+          <h3>همگام‌سازی بعد از merge</h3>
+          <div class="code-block"><code>git switch main
+git pull --rebase origin main
+git remote prune origin</code></div>
+        </div>
+        <div class="card">
+          <h3>تگ نسخه‌های پایدار</h3>
+          <div class="code-block"><code>git tag -a v1.0.0 -m "نسخه ۱.۰.۰"
+git push --tags</code></div>
+        </div>
+      </div>
+
+      <h2 id="token" style="margin-top:48px">امنیت توکن</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>روش</th><th>امنیت</th><th>کاربرد</th></tr></thead>
+          <tbody>
+            <tr><td>URL با توکن</td><td style="color:var(--red-600);font-weight:700">ضعیف</td><td>فقط تست موقت — توکن در config می‌ماند</td></tr>
+            <tr><td>Credential Manager</td><td style="color:#8A6D1A;font-weight:700">خوب</td><td>ویندوز/مک ذخیره خودکار</td></tr>
+            <tr><td>کلید SSH</td><td style="color:var(--green-700);font-weight:700">بهترین</td><td>کار طولانی‌مدت — توصیه‌شده</td></tr>
+            <tr><td>Fine-grained PAT</td><td style="color:#8A6D1A;font-weight:700">خوب</td><td>اتوماسیون — فقط یک مخزن، محدوده حداقلی</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert warn"><span class="ic">🔑</span><div><b>قانون طلایی:</b> توکن در کد، مستندات، اسکرین‌شات یا پیام عمومی — هرگز. توکنی که در گفتگو اشتراک شده، بعد از کار <b>حتماً از GitHub → Settings → Developer settings باطل کنید</b> و توکن تازه با محدوده حداقلی بسازید.</div></div>
+
+      <h2 id="update" style="margin-top:48px">به‌روزرسانی پوشه dsh از مخزن رسمی</h2>
+      <p>لایه بومی‌سازی شما حفظ می‌شود و فقط سورس عوض می‌شود:</p>
+      <div class="code-block"><code>git switch -c update/dsh-latest
+rm -rf dsh
+git clone --depth 1 https://github.com/deepseek-ai/deepseek-harness.git dsh-tmp
+rm -rf dsh-tmp/.git
+mv dsh-tmp dsh
+git add dsh
+git commit -m "update: همگام‌سازی سورس dsh با مخزن رسمی"
+git push -u origin update/dsh-latest</code></div>
+      <div class="alert info"><span class="ic">ℹ️</span><div>قبل از merge: <code>pnpm install && pnpm run build && pnpm dsh web</code> را تست کنید تا سازگاری با مستندات فارسی حفظ شود.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>🇮🇷 عامل‌های هوشمند ایران — Agent_mahai</span>
+      <span>مجوز MIT · پورتال آفلاین · فونت وزیرمتن</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

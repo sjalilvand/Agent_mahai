@@ -1,0 +1,23 @@
+# وابستگی‌ها و فایل‌های تولیدی
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
+Thumbs.db
+
+# محیط و رازها — هرگز این‌ها را commit نکنید
+.env
+.env.*
+*.token
+credentials*.yaml
+.npmrc-local
+
+# خروجی‌های اجرای dsh
+dsh-tmp/
+*.jsonl
+
+# ادیتورها
+.vscode/
+.idea/
+*.swp

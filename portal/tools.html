@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کاتالوگ ابزارها — عامل‌های هوشمند ایران</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230E7A3D' d='M50 4 90 27 90 73 50 96 10 73 10 27Z'/%3E%3Cpath fill='%23FAF9F6' d='M50 20 76 35 76 65 50 80 24 65 24 35Z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="#0E7A3D" d="M50 4 90 27 90 73 50 96 10 73 10 27Z"/>
+        <path fill="#FAF9F6" d="M50 20 76 35 76 65 50 80 24 65 24 35Z"/>
+        <path fill="#C62828" d="M50 34 64 42 64 58 50 66 36 58 36 42Z"/>
+      </svg>
+      <span>عامل‌های هوشمند ایران<small>Agent_mahai · نسخه بومی DeepSeek Harness</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">خانه</a>
+      <a href="install.html">نصب</a>
+      <a href="tools.html">ابزارها</a>
+      <a href="plugins.html">پلاگین‌نویسی</a>
+      <a href="troubleshooting.html">رفع مشکلات ایران</a>
+      <a href="git.html">گردش کار گیت</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="crumb"><a href="index.html">خانه</a> / ابزارها</div>
+    <h1>کاتالوگ ابزارهای داخلی</h1>
+    <p>ابزارهایی که مدل در حین کار می‌تواند فراخوانی کند — جست‌وجو کنید یا بر اساس دسته فیلتر کنید. شرح کامل هر ابزار در آموزش ۰۴ (<code>docs-fa/</code>).</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tool-filters">
+      <input type="search" id="tool-search" placeholder="جست‌وجو در ابزارها… (مثلاً: bash، وب، زیرعامل)">
+      <button class="chip on" data-cat="all">همه</button>
+      <button class="chip" data-cat="shell">اجرای دستور</button>
+      <button class="chip" data-cat="fs">فایل‌سیستم</button>
+      <button class="chip" data-cat="web">وب</button>
+      <button class="chip" data-cat="multi">چندعاملی</button>
+      <button class="chip" data-cat="plan">نظم و زمان</button>
+      <button class="chip" data-cat="ui">تعامل کاربر</button>
+      <button class="chip" data-cat="dev">توسعه</button>
+      <button class="chip" data-cat="exp">تجربی</button>
+    </div>
+    <p style="text-align:center;color:var(--ink-300);font-size:13.5px;margin-bottom:28px"><span id="tool-count"></span></p>
+
+    <div class="grid grid-3" id="tools-grid">
+
+      <div class="card tool-card" data-cat="shell" data-name="bash pwsh shell" data-desc="اجرای دستورات شل پس‌زمینه">
+        <div class="icon">⌨️</div>
+        <span class="cat">اجرای دستور</span>
+        <h3>bash / pwsh</h3>
+        <p>اجرای دستورات shell (لینوکس/مک) و PowerShell (ویندوز). پشتیبانی از اجرای پس‌زمینه با پارامتر run_in_background و پیگیری با ابزارهای job_*.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="shell" data-name="terminal pty persistent" data-desc="ترمینال تعاملی ماندگار">
+        <div class="icon">🖥</div>
+        <span class="cat">اجرای دستور</span>
+        <h3>terminal_* / bash-persistent</h3>
+        <p>ترمینال PTY ماندگار با حفظ وضعیت: باز کردن، خواندن، ارسال ورودی و بستن. برای محیط‌های تعاملی مثل python و mysql.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="fs" data-name="read write edit file image" data-desc="خواندن نوشتن ویرایش فایل">
+        <div class="icon">📁</div>
+        <span class="cat">فایل‌سیستم</span>
+        <h3>read / write / edit / read_image</h3>
+        <p>ابزارهای اصلی فایل. سیاست «اول بخوان، بعد بنویس» به‌صورت پیش‌فرض فعال است — سپر علیه بازنویسی کورکورانه فایل‌ها.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="fs" data-name="glob grep search ripgrep" data-desc="جستجوی فایل و محتوا">
+        <div class="icon">🔍</div>
+        <span class="cat">فایل‌سیستم</span>
+        <h3>glob / grep</h3>
+        <p>جست‌وجوی نام فایل با الگو و جست‌وجوی محتوا — با باینری ripgrep بسته‌بندی‌شده؛ نه نیاز به نصب rg دارید و نه shell درگیر می‌شود.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="fs" data-name="str_replace_editor edit" data-desc="ویرایش دقیق متن">
+        <div class="icon">✏️</div>
+        <span class="cat">فایل‌سیستم</span>
+        <h3>str_replace_editor</h3>
+        <p>نمایاندن فایل، ایجاد، جایگزینی لفظیِ یکتا و درج خط — ویرایش دقیق و کنترل‌شده که با هر shell سازگار است.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="web" data-name="web_search web_fetch internet" data-desc="جستجو و واکشی وب">
+        <div class="icon">🌐</div>
+        <span class="cat">وب</span>
+        <h3>web_search / web_fetch</h3>
+        <p>جست‌وجوی وب و واکشی صفحه. سرویس واقعی پشت ctx.web پنهان است — می‌توانید backend را بدون تغییر schema عوض کنید.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="multi" data-name="subagent delegate child" data-desc="تفویض وظیفه به عامل فرزند">
+        <div class="icon">🤝</div>
+        <span class="cat">چندعاملی</span>
+        <h3>subagent</h3>
+        <p>تفویض وظیفه به عامل فرزند با نشست مستقل. انتخاب مدل فرزند، کشف مدل‌ها، و سیاست مجوز ارثی — هر تفویض فوراً شناسه برمی‌گرداند.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="multi" data-name="send_message interrupt list_agents" data-desc="مدیریت عامل‌های فعال">
+        <div class="icon">📡</div>
+        <span class="cat">چندعاملی</span>
+        <h3>send_message / interrupt_agent / list_agents</h3>
+        <p>پیام به زیرعامل در میانه کار، قطع اجرای آن، و فهرست عامل‌های زنده.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="multi" data-name="team spawn_teammate agent team" data-desc="تیم عامل‌ها با وظایف مشترک">
+        <div class="icon">👥</div>
+        <span class="cat">چندعاملی</span>
+        <h3>agent-team (تجربی)</h3>
+        <p>تیم عامل‌های دائمی: spawn_teammate، وظایف مشترک (team_task_*) و صندوق پیام — به‌صورت پیش‌فرض غیرفعال، فعال‌سازی با پروفایل اختصاصی.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="plan" data-name="todo checklist tasks" data-desc="چک‌لیست وظایف نشست">
+        <div class="icon">✅</div>
+        <span class="cat">نظم و زمان</span>
+        <h3>todo_write</h3>
+        <p>چک‌لیست وظایف نشست؛ رابط‌ها آخرین وضعیت را به‌شکل لیست کارها نمایش می‌دهند. تعداد وظایف هم‌زمانِ «در حال اجرا» قابل پیکربندی است.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="plan" data-name="schedule cron timer zamanbandi" data-desc="زمان‌بندی خودکار">
+        <div class="icon">⏰</div>
+        <span class="cat">نظم و زمان</span>
+        <h3>schedule_create / update / delete / list</h3>
+        <p>زمان‌بندی واقعی: زمان مطلق، فواصل ثابت، روزانه/هفتگی با منطقه زمانی (مثل Asia/Tehran) و cron پنج‌فیلدی. سررسید در همان نشست ادامه پیدا می‌کند.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="plan" data-name="goal target hadaf" data-desc="مدیریت هدف کلان">
+        <div class="icon">🎯</div>
+        <span class="cat">نظم و زمان</span>
+        <h3>create_goal / get_goal / update_goal</h3>
+        <p>هدف کلان با چرخه‌های توقف/ادامه/تکمیل/مسدود. ساخت و تغییر نیازمند اقتدار ریشه‌ی «انسان مستقیم» است.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="plan" data-name="workflow ralph loop" data-desc="گردش کار ساختاریافته">
+        <div class="icon">🔄</div>
+        <span class="cat">نظم و زمان</span>
+        <h3>workflow / ralph</h3>
+        <p>اجرای گردش‌کارهای چندمرحله‌ای؛ ralph چرخه‌ای ثابت با هدف غیرقابل‌تغییر می‌سازد — مناسب کارهای متمرکز طولانی.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="plan" data-name="jobs background kill output" data-desc="مدیریت کارهای پس‌زمینه">
+        <div class="icon">🧵</div>
+        <span class="cat">نظم و زمان</span>
+        <h3>job_list / job_output / job_kill</h3>
+        <p>کنترل کارهای پس‌زمینه: خواندن خروجی، فهرست و توقف — همه از سه ابزار مشترک برای bash پس‌زمینه و PTY.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="ui" data-name="ask_user question soal" data-desc="پرسیدن سؤال از کاربر">
+        <div class="icon">❓</div>
+        <span class="cat">تعامل کاربر</span>
+        <h3>ask_user_question</h3>
+        <p>پرسش از کاربر در میانه اجرا. حالت مسدودکننده پیش‌فرض یا حالت زمان‌دار با پاسخ تأخیری قابل قبول.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="ui" data-name="exit_plan_mode plan barnamerizi" data-desc="برنامه‌ریزی و تأیید طرح">
+        <div class="icon">🗺</div>
+        <span class="cat">تعامل کاربر</span>
+        <h3>exit_plan_mode</h3>
+        <p>در حالت برنامه‌ریزی، مدل طرح را ارائه می‌دهد؛ شما تأیید می‌کنید یا با بازخورد ادامه می‌دهید. برای کارهای بزرگ و پرریسک.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="ui" data-name="present deliverable tahvil" data-desc="ارائه خروجی نهایی">
+        <div class="icon">📦</div>
+        <span class="cat">تعامل کاربر</span>
+        <h3>present</h3>
+        <p>تحویل دستیافتنی‌ها (خروجی نهایی مثل فایل تولیدشده) به‌شکل کارت؛ در رابط وب با امکان باز کردن فایل منبع.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="ui" data-name="propose_action action cards" data-desc="پیشنهاد اقدام کارتی">
+        <div class="icon">💳</div>
+        <span class="cat">تعامل کاربر</span>
+        <h3>propose_action</h3>
+        <p>پیشنهاد عمل به‌شکل کارت تعاملی — فقط برای عامل‌هایی که مهارت نوع کارت مربوطه را بارگذاری کرده‌اند.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="plugin_manager install bundle" data-desc="نصب و مدیریت پلاگین">
+        <div class="icon">🧩</div>
+        <span class="cat">توسعه</span>
+        <h3>plugin_manager</h3>
+        <p>لیست، فعال/غیرفعال، نصب و حذف باندل‌ها. نصب می‌تواند اسکریپت build اجرا کند — با تأیید صریح و مرور سازنده.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="plugin_market market bazhar" data-desc="مرور بازار پلاگین">
+        <div class="icon">🛒</div>
+        <span class="cat">توسعه</span>
+        <h3>plugin_market</h3>
+        <p>مرور ایندکس‌های بازار، جست‌وجوی بسته و دیدن نسخه‌ها. متن‌های بسته شخص ثالث‌اند — نه دستور.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="cordis_inspect runtime debug" data-desc="بازرسی زمان اجرا">
+        <div class="icon">🔬</div>
+        <span class="cat">توسعه</span>
+        <h3>cordis_inspect_list / query</h3>
+        <p>بازرسی فقط‌خواندنی درخت زمان اجرا — چه پلاگینی فعال است و چه وضعیتی دارد. مخصوص حالت سازندگان.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="run_code ptc programmatic" data-desc="ترکیب ابزارها با کد">
+        <div class="icon">🧮</div>
+        <span class="cat">توسعه</span>
+        <h3>run_code (PTC)</h3>
+        <p>اجرای «برنامه‌ای» که چند ابزار را ترکیب می‌کند — سریع‌تر و ارزان‌تر از زنجیره فراخوانی‌ها؛ اجراهای موازی تا سقف مجاز.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="lsp language server definition" data-desc="قابلیت‌های زبان‌محور">
+        <div class="icon">🔤</div>
+        <span class="cat">توسعه</span>
+        <h3>lsp</h3>
+        <p>پرش به تعریف، فهرست ارجاع و خطاها از طریق سرور زبان (مثل dsh-lsp-stdio). بدون ارائه‌دهنده، خطای ساختاریافته برمی‌گردد.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="skill maharat" data-desc="بارگذاری مهارت‌ها">
+        <div class="icon">🎓</div>
+        <span class="cat">توسعه</span>
+        <h3>skill</h3>
+        <p>بارگذاری مهارت‌های آموزشی در مکالمه — بسته‌های دانشی که رفتار عامل را در حین کار غنی می‌کنند.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="session search history tarikhche" data-desc="جستجوی تاریخچه نشست‌ها">
+        <div class="icon">🗄</div>
+        <span class="cat">توسعه</span>
+        <h3>session_search / event_read / trace</h3>
+        <p>پنج ابزار فقط‌خواندنی برای جست‌وجو در تاریخچه نشست‌ها — حافظه تجاری تیم شما: «قبلاً این خطا را چطور حل کردیم؟»</p>
+      </div>
+
+      <div class="card tool-card" data-cat="dev" data-name="mcp resources protocol" data-desc="منابع سرورهای MCP">
+        <div class="icon">🔗</div>
+        <span class="cat">توسعه</span>
+        <h3>list_mcp_resources و…</h3>
+        <p>کار با منابع سرورهای Model Context Protocol — افزودن ابزارهای استاندارد جامعه به عامل شما.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="exp" data-name="stagehand browser navigate screenshot" data-desc="کنترل مرورگر واقعی">
+        <div class="icon">🧭</div>
+        <span class="cat">تجربی</span>
+        <h3>stagehand_* (browser-use)</h3>
+        <p>ناوبری مرورگر، اسکرین‌شات، استخراج داده ساختاریافته و عمل (کلیک/تایپ) — برای اتوماسیون سایت‌های بدون API.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="exp" data-name="computer use desktop mouse keyboard" data-desc="کنترل رومیزی">
+        <div class="icon">🖱</div>
+        <span class="cat">تجربی</span>
+        <h3>computer-use</h3>
+        <p>کنترل ماوس و کیبورد روی رومیزی — تجربی و حساس؛ فقط در محیط ایزوله و با آگاهی کامل استفاده کنید.</p>
+      </div>
+
+      <div class="card tool-card" data-cat="exp" data-name="worktree git branch checkout" data-desc="شاخه و چک‌اوت گیت">
+        <div class="icon">🌿</div>
+        <span class="cat">تجربی</span>
+        <h3>create_worktree</h3>
+        <p>ساخت شاخه و چک‌اوت جدید از یک commit مشخص و تغییر پوشه کاری نشست — برای کارهای موازی ایزوله روی کد.</p>
+      </div>
+
+    </div>
+
+    <div class="alert info" style="margin-top:34px">
+      <span class="ic">ℹ️</span>
+      <div><b>ابزارهای پروفایل شما</b>فهرست دقیق ابزارهای فعال به پروفایل بستگی دارد. بررسی با: <code>dsh --profile web --dump-config</code> — شرح کامل هر ابزار در آموزش ۰۴ در پوشه <code>docs-fa/</code>.</div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>🇮🇷 عامل‌های هوشمند ایران — Agent_mahai</span>
+      <span>مجوز MIT · پورتال آفلاین · فونت وزیرمتن</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عامل‌های هوشمند ایران — بومی‌سازی DeepSeek Harness برای ایران</title>
+<meta name="description" content="نسخه بومی‌سازی‌شده دیپ‌سیک هارنس برای ایران: آموزش کامل فارسی، پورتال آفلاین، اسکریپت‌های میرور npm و رفع مشکلات شبکه.">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230E7A3D' d='M50 4 90 27 90 73 50 96 10 73 10 27Z'/%3E%3Cpath fill='%23FAF9F6' d='M50 20 76 35 76 65 50 80 24 65 24 35Z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ================= هدر ================= -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="#0E7A3D" d="M50 4 90 27 90 73 50 96 10 73 10 27Z"/>
+        <path fill="#FAF9F6" d="M50 20 76 35 76 65 50 80 24 65 24 35Z"/>
+        <path fill="#C62828" d="M50 34 64 42 64 58 50 66 36 58 36 42Z"/>
+      </svg>
+      <span>عامل‌های هوشمند ایران<small>Agent_mahai · نسخه بومی DeepSeek Harness</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">خانه</a>
+      <a href="install.html">نصب</a>
+      <a href="tools.html">ابزارها</a>
+      <a href="plugins.html">پلاگین‌نویسی</a>
+      <a href="troubleshooting.html">رفع مشکلات ایران</a>
+      <a href="git.html">گردش کار گیت</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= هیرو ================= -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="flag-chip"><span class="dot"></span> بومی‌سازی کامل برای کاربران ایران — کاملاً آفلاین</div>
+    <h1>عامل‌های هوشمند،<br>به <span class="accent">زبان فارسی</span> و برای ایران</h1>
+    <p class="lead">
+      نسخه بومی‌سازی‌شده پروژه متن‌باز <b>DeepSeek Harness (dsh)</b> — بستر عامل هوشمند با معماری
+      «همه‌چیز پلاگین است». همراه با ۱۱ آموزش کامل فارسی، پورتال آفلاین، اسکریپت‌های میرور npm ایران
+      و راهنمای رفع مشکلات شبکه و تحریم.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-ghost-light" href="install.html">⚡ شروع سریع — ۵ دقیقه</a>
+      <a class="btn btn-ghost-light" href="tools.html">🧰 کاتالوگ ابزارها</a>
+      <a class="btn btn-ghost-light" href="troubleshooting.html">🇮🇷 رفع مشکلات ایران</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b>۳۵+</b><span>ابزار آماده</span></div>
+      <div class="hero-stat"><b>۱۱</b><span>آموزش فارسی کامل</span></div>
+      <div class="hero-stat"><b>۱۰۰٪</b><span>پورتال آفلاین</span></div>
+      <div class="hero-stat"><b>MIT</b><span>مجوز متن‌باز</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= امکانات ================= -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">— چه چیزی در این مخزن است؟</span>
+      <h2>هرچه برای کار با عامل‌های هوشمند در ایران لازم دارید</h2>
+      <p>سورس کامل پروژه اصلی، دست‌نخورده؛ بومی‌سازی در لایه‌های جداگانه — پایدار و قابل به‌روزرسانی.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="card">
+        <div class="icon">📚</div>
+        <h3>آموزش فارسی کامل</h3>
+        <p>از «Node.js چیست؟» تا ساخت پلاگین اختصاصی، تست، دیباگ و انتشار — همه به فارسی روان با دستورهای واقعی.</p>
+        <a class="more" href="#map">نقشه آموزش‌ها ←</a>
+      </div>
+      <div class="card red">
+        <div class="icon">🛠</div>
+        <h3>اسکریپت‌های ایران</h3>
+        <p>تنظیم خودکار میرور <code>registry.npmjs.ir</code>، قالب پروکسی، و نصب تک‌دستوری برای لینوکس، مک و ویندوز.</p>
+        <a class="more" href="install.html">نصب با یک دستور ←</a>
+      </div>
+      <div class="card gold">
+        <div class="icon">🖥</div>
+        <h3>پورتال آفلاین</h3>
+        <p>همین وب‌سایت بدون اینترنت کار می‌کند؛ فونت وزیرمتن محلی است و هیچ وابستگی به سرویس خارجی ندارد.</p>
+        <a class="more" href="#portal">باز کردن پورتال ←</a>
+      </div>
+      <div class="card">
+        <div class="icon">🧩</div>
+        <h3>نمونه بومی</h3>
+        <p>پلاگین آماده «تقویم شمسی» با کامنت فارسی — قالب یادگیری برای ساخت ابزارهای بومی خودتان.</p>
+        <a class="more" href="plugins.html">پلاگین‌نویسی ←</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= dsh چیست؟ ================= -->
+<section class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">— معرفی</span>
+      <h2>دیپ‌سیک هارنس (dsh) چیست؟</h2>
+      <p>پروژه متن‌باز DeepSeek AI که یک مدل زبانی را به عامل کنش‌گر تبدیل می‌کند: فایل می‌خواند و می‌نویسد،
+      دستور اجرا می‌کند، در وب جست‌وجو می‌کند و تا رسیدن به هدف ادامه می‌دهد.</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="icon">🔌</div>
+        <h3>همه‌چیز پلاگین است</h3>
+        <p>هر قابلیت — از bash تا جست‌وجوی وب — یک پلاگین جایگزین‌پذیر روی فریم‌ورک Cordis است. نصب، حذف یا تعویض با یک دستور.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🧱</div>
+        <h3>پروفایل‌های ترکیبی</h3>
+        <p>پشته‌ای مرتب از پلاگین‌ها که تعیین می‌کند مدل چه ابزارهایی ببیند و با چه مجوزهایی کار کند؛ پروفایل‌های آماده web، tui، headless و SDK.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🤖</div>
+        <h3>چندعاملی</h3>
+        <p>تفویض وظایف به زیرعامل‌ها با مدل‌های مستقل، تیم‌های عامل، زمان‌بندی خودکار و مدیریت هدف کلان.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= شروع سریع ================= -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">— شروع سریع</span>
+      <h2>در ۵ دقیقه اجرا کنید</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>۱️⃣ نصب Node.js (نسخه ۲۰+)</h3>
+        <p>از سایت رسمی یا میرورهای ایرانی — آموزش کامل گام‌به‌گام در صفحه نصب.</p>
+        <div class="code-block"><code>node --version</code></div>
+      </div>
+      <div class="card">
+        <h3>۲️⃣ تنظیم میرور ایران (توصیه‌شده)</h3>
+        <p>برای سرعت دانلود بسته‌ها در داخل کشور:</p>
+        <div class="code-block"><code>npm config set registry https://registry.npmjs.ir/</code></div>
+      </div>
+      <div class="card">
+        <h3>۳️⃣ اجرای dsh</h3>
+        <p>رابط وب روی پورت ۳۰۸۰ بالا می‌آید:</p>
+        <div class="code-block"><code>npx @deepseek-ai/dsh web</code></div>
+      </div>
+      <div class="card">
+        <h3>۴️⃣ یا اسکریپت تک‌دستوری</h3>
+        <p>لینوکس/مک: <code>bash scripts/setup-iran.sh</code><br>ویندوز: <code>scripts\setup-iran.ps1</code></p>
+      </div>
+    </div>
+    <div class="alert danger" style="margin-top:30px">
+      <span class="ic">⚠️</span>
+      <div><b>هشدار ایمنی</b>dsh در مرحله پیش‌نمایش توسعه‌دهنده است، ممیزی امنیتی نشده و می‌تواند کد اجرا کند.
+      با کمترین دسترسی ممکن، ترجیحاً در ماشین مجازی یا کانتینر اجرا کنید و قبل از تأیید هر دستور، آن را مرور کنید.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= نقشه آموزش‌ها ================= -->
+<section class="section alt" id="map">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">— مسیر یادگیری</span>
+      <h2>نقشه ۱۱ آموزش فارسی</h2>
+      <p>نسخه کامل و متنی آموزش‌ها در پوشه <code>docs-fa/</code> مخزن است؛ این پورتال خلاصه تعاملی آن‌هاست.</p>
+    </div>
+    <div class="doc-list">
+      <a class="doc-item" href="install.html"><div><h3>معرفی دیپ‌سیک هارنس و معماری «همه‌چیز پلاگین است» <span class="level basic">مقدماتی</span></h3><p>هارنس چیست، Cordis چیست، هشدار ایمنی و ساختار مخزن</p></div></a>
+      <a class="doc-item" href="install.html"><div><h3>نصب گام‌به‌گام در ویندوز، لینوکس و مک <span class="level basic">مقدماتی</span></h3><p>Node.js، میرورهای npm ایران، نصب از سورس با pnpm</p></div></a>
+      <a class="doc-item" href="install.html"><div><h3>اولین اجرا، رابط وب و اتصال مدل <span class="level basic">مقدماتی</span></h3><p>پروفایل‌ها، کارت DeepSeek، دروازه واسط برای ایران، اولین وظیفه</p></div></a>
+      <a class="doc-item" href="tools.html"><div><h3>کاتالوگ کامل ابزارهای داخلی <span class="level mid">متوسط</span></h3><p>شرح ۳۵+ ابزار در ۸ دسته + جدول تصمیم «کدام ابزار برای کدام کار»</p></div></a>
+      <a class="doc-item" href="tools.html"><div><h3>مثال‌های کاربردی واقعی <span class="level mid">متوسط</span></h3><p>۱۰ سناریو: از ساخت وب‌اپ تا اتوماسیون headless و زمان‌بندی</p></div></a>
+      <a class="doc-item" href="plugins.html"><div><h3>ساخت پلاگین اختصاصی + نمونه تقویم شمسی <span class="level adv">پیشرفته</span></h3><p>پلاگین، باندل، پروفایل؛ تزریق وابستگی؛ لایه‌بندی قابلیت‌ها</p></div></a>
+      <a class="doc-item" href="plugins.html"><div><h3>تست و دیباگ حرفه‌ای <span class="level adv">پیشرفته</span></h3><p>dump-config، بازرسی Cordis، لاگ JSONL، vitest، دیباگ پلاگین</p></div></a>
+      <a class="doc-item" href="plugins.html"><div><h3>انتشار پلاگین در npm و بازار <span class="level adv">پیشرفته</span></h3><p>بسته‌بندی، engines.dsh، موضوع dsh-plugin، ایندکس بازار</p></div></a>
+      <a class="doc-item" href="troubleshooting.html"><div><h3>رفع مشکلات رایج در ایران <span class="level basic">همه سطوح</span></h3><p>تحریم، میرور، پروکسی، DNS، دسترسی به API مدل، خطاهای رایج</p></div></a>
+      <a class="doc-item" href="tools.html"><div><h3>واژه‌نامه اصطلاحات فنی <span class="level basic">همه سطوح</span></h3><p>ترجمه مصوب ۷۰+ اصطلاح: عامل، باندل، پروفایل، سندباکس و...</p></div></a>
+      <a class="doc-item" href="git.html"><div><h3>گردش کار حرفه‌ای گیت <span class="level basic">همه سطوح</span></h3><p>کلون با توکن/SSH، شاخه، commit، push/pull، تعارض، کار تیمی، امنیت توکن</p></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= پورتال آفلاین ================= -->
+<section class="section" id="portal">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">— بدون اینترنت</span>
+      <h2>پورتال کاملاً آفلاین کار می‌کند</h2>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>با پایتون یا نود</h3>
+        <div class="code-block"><code>cd portal
+python3 -m http.server 8080
+# یا: npx serve .</code></div>
+        <p>سپس <code>http://localhost:8080</code> را باز کنید.</p>
+      </div>
+      <div class="card">
+        <h3>یا مستقیم در مرورگر</h3>
+        <p>فایل <code>portal/index.html</code> را دابل‌کلیک کنید — همه‌چیز (فونت، استایل، اسکریپت) محلی است.</p>
+        <div class="alert info"><span class="ic">💡</span><div>پورتال را می‌توانید با GitHub Pages هم منتشر کنید: Settings → Pages → شاخه main و پوشه /portal.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <h2>آماده‌اید اولین عامل هوشمندتان را اجرا کنید؟</h2>
+      <p>از صفحه نصب شروع کنید یا اگر خطای شبکه گرفتید، مستقیم بروید سراغ راهنمای رفع مشکلات ایران.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="install.html">شروع نصب</a>
+        <a class="btn btn-red" href="troubleshooting.html">رفع مشکلات ایران</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= فوتر ================= -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h4>🇮🇷 عامل‌های هوشمند ایران</h4>
+        <p>بومی‌سازی متن‌باز DeepSeek Harness برای کاربران فارسی‌زبان. سورس اصلی در پوشه dsh/ دست‌نخورده است و مجوز MIT دارد؛ لایه بومی‌سازی شامل مستندات، پورتال و اسکریپت‌ها در مخزن Agent_mahai توسعه یافته است.</p>
+      </div>
+      <div>
+        <h4>آموزش‌ها</h4>
+        <a href="install.html">نصب و راه‌اندازی</a>
+        <a href="tools.html">کاتالوگ ابزارها</a>
+        <a href="plugins.html">پلاگین‌نویسی</a>
+      </div>
+      <div>
+        <h4>ایران</h4>
+        <a href="troubleshooting.html">رفع مشکلات شبکه</a>
+        <a href="install.html">میرور npm</a>
+        <a href="git.html">گردش کار گیت</a>
+      </div>
+      <div>
+        <h4>منابع رسمی</h4>
+        <a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">مخزن رسمی dsh</a>
+        <a href="https://deepseek-harness.github.io/deepseek-harness/" target="_blank" rel="noopener">مستندات رسمی</a>
+        <a href="https://github.com/sjalilvand/Agent_mahai" target="_blank" rel="noopener">این مخزن در گیت‌هاب</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>ساخته‌شده با <span class="heart">♥</span> برای جامعه توسعه‌دهندگان ایران</span>
+      <span>مجوز MIT · فونت وزیرمتن (SIL OFL) · بدون ردیابی و بدون CDN خارجی</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

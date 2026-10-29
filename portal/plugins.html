@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پلاگین‌نویسی — عامل‌های هوشمند ایران</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230E7A3D' d='M50 4 90 27 90 73 50 96 10 73 10 27Z'/%3E%3Cpath fill='%23FAF9F6' d='M50 20 76 35 76 65 50 80 24 65 24 35Z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="#0E7A3D" d="M50 4 90 27 90 73 50 96 10 73 10 27Z"/>
+        <path fill="#FAF9F6" d="M50 20 76 35 76 65 50 80 24 65 24 35Z"/>
+        <path fill="#C62828" d="M50 34 64 42 64 58 50 66 36 58 36 42Z"/>
+      </svg>
+      <span>عامل‌های هوشمند ایران<small>Agent_mahai · نسخه بومی DeepSeek Harness</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">خانه</a>
+      <a href="install.html">نصب</a>
+      <a href="tools.html">ابزارها</a>
+      <a href="plugins.html">پلاگین‌نویسی</a>
+      <a href="troubleshooting.html">رفع مشکلات ایران</a>
+      <a href="git.html">گردش کار گیت</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="crumb"><a href="index.html">خانه</a> / پلاگین‌نویسی</div>
+    <h1>ساخت پلاگین اختصاصی</h1>
+    <p>معماری «همه‌چیز پلاگین است» یعنی ابزار بعدی، ایده خود شماست — از سلام‌دنیا تا تقویم شمسی.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <nav class="content-nav">
+      <h4>محتوای این صفحه</h4>
+      <a href="#concepts">سه مفهوم کلیدی</a>
+      <a href="#hello">پلاگین سلام‌دنیا</a>
+      <a href="#tool">اولین ابزار</a>
+      <a href="#jalali">نمونه: تقویم شمسی</a>
+      <a href="#quality">چک‌لیست کیفیت</a>
+      <a href="#publish">انتشار</a>
+    </nav>
+
+    <div>
+      <h2 id="concepts">سه مفهوم کلیدی</h2>
+      <div class="grid grid-3" style="margin-bottom:40px">
+        <div class="card">
+          <div class="icon">🧩</div>
+          <h3>پلاگین</h3>
+          <p>ماژولی با تابع <code>apply</code> که به زمین Cordis وصل می‌شود و قابلیت (ابزار/سرویس/رابط) اضافه می‌کند.</p>
+        </div>
+        <div class="card">
+          <div class="icon">📦</div>
+          <h3>باندل</h3>
+          <p>بسته npm با کلید <code>dsh.bundle</code> در مانیفست — یک فایل patch حمل می‌کند. چیزی که شما توزیع می‌کنید.</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚙️</div>
+          <h3>پروفایل</h3>
+          <p>ترکیب باندل‌ها در <code>$DSH_HOME/profiles</code> — چیزی که کاربر با <code>dsh --profile</code> بوت می‌کند.</p>
+        </div>
+      </div>
+
+      <h2 id="hello">پلاگین سلام‌دنیا</h2>
+      <p>ساختار پوشه:</p>
+      <div class="code-block"><code>hello-plugin/
+├── package.json       # مانیفست باندل (dsh.bundle)
+├── index.js           # نقطه ورود پلاگین
+└── cordis.patch.yml   # لایه پیکربندی</code></div>
+      <div class="code-block"><code>// package.json
+{
+  "name": "dsh-hello-plugin",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "cordis.patch.yml"],
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+}</code></div>
+      <div class="code-block"><code>// cordis.patch.yml
+- insert:
+    - id: hello
+      name: dsh-hello-plugin</code></div>
+      <p>اجرای محلی با لایه اضافی:</p>
+      <div class="code-block"><code>pnpm dsh web --patch ./hello-plugin/cordis.patch.yml</code></div>
+
+      <h2 id="tool" style="margin-top:48px">اولین ابزار مدل‌محور</h2>
+      <p>با <code>defineTool</code> ابزار تعریف می‌کنید؛ اعتبارسنجی ورودی خودکار از روی پارامترها ساخته می‌شود:</p>
+      <div class="code-block"><code>import type { Context } from '@deepseek-ai/cordis'
+import { defineTool } from '@deepseek-ai/dsh-tools'
+
+export const name = 'greet-tool'
+export const inject = ['tools']   // تزریق وابستگی: رجیستری ابزار
+
+export function apply(ctx: Context) {
+  ctx.tools.register(defineTool({
+    name: 'greet',
+    description: 'به یک نفر سلام می‌کند.',
+    parameters: {
+      name: { type: 'string', required: true, description: 'نام فرد' },
+    },
+    output: {
+      schema: { type: 'string' },
+      render: (_args, value) => [{ type: 'text', text: value }],
+    },
+    async execute(args) {
+      return `سلام، ${args.name}!`
+    },
+  }))
+}</code></div>
+      <div class="alert info"><span class="ic">💡</span><div><b>سه نکته کلیدی:</b> ۱) <code>inject</code> ترتیب بارگذاری را تضمین می‌کند ۲) <code>defineTool</code> ورودی‌ها را infer و validate می‌کند ۳) خروجی متعارف و رندر جداست — یک ابزار، نسخه‌های درست برای مدل و UI.</div></div>
+
+      <h2 id="jalali" style="margin-top:48px">نمونه بومی: تقویم شمسی 🇮🇷</h2>
+      <p>پلاگین کامل و آماده اجرا در <code>examples/jalali-plugin/</code> مخزن — ابزار <code>date_convert</code> با الگوریتم استاندارد جلالی و بدون وابستگی خارجی:</p>
+      <div class="code-block"><code># اجرا از ریشه مخزن (بعد از build سورس)
+cd dsh
+pnpm dsh web --patch ../examples/jalali-plugin/cordis.patch.yml</code></div>
+      <p>سپس در مکالمه بپرسید: «۲۵ اسفند ۱۴۰۴ چه روزی از سال میلادی است؟» — عامل ابزار را صدا می‌زند و جواب دقیق می‌دهد.</p>
+      <div class="grid grid-2" style="margin-top:22px">
+        <div class="card">
+          <h3>ایده‌های بومی‌سازی دیگر</h3>
+          <p>• تبدیل اعداد فارسی/انگلیسی<br>• تعطیلات رسمی و مناسبت‌های ایران<br>• اعتبارسنجی کد ملی<br>• پاکسازی رشته فارسی (ی/ک، نیم‌فاصله)</p>
+        </div>
+        <div class="card red">
+          <h3>لایه‌بندی حرفه‌ای</h3>
+          <p>پلاگین بزرگ شد؟ الگوی رسمی سه‌بخشی: <b>تعریف سرویس</b> (قرارداد) + <b>ارائه‌دهنده سرویس</b> (پیاده‌سازی قابل تعویض) + <b>مصرف‌کننده</b> — همان الگویی که خود dsh استفاده می‌کند.</p>
+        </div>
+      </div>
+
+      <h2 id="quality" style="margin-top:48px">چک‌لیست کیفیت پلاگین</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>مورد</th><th>چرا مهم است</th></tr></thead>
+          <tbody>
+            <tr><td>نام ابزار کوتاه و یکتا (snake_case)</td><td>مدل راحت‌تر انتخاب می‌کند</td></tr>
+            <tr><td><code>description</code> دقیق و جهت‌دهنده</td><td>مدل با همین متن تصمیم به فراخوانی می‌گیرد</td></tr>
+            <tr><td>پارامترهای required حداقلی</td><td>هر پارامتر اضافی = یک نقطه خطا</td></tr>
+            <tr><td>خطاها به‌شکل پیام قابل‌فهم</td><td>مدل می‌تواند خودش اصلاح کند</td></tr>
+            <tr><td>اعلام <code>engines.dsh</code></td><td>محافظت سازگاری نسخه — نصب ناسازگار بسته می‌شود</td></tr>
+            <tr><td><code>files</code> دقیق در package.json</td><td>بسته تمیز، بدون کلید و فایل زائد</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="publish" style="margin-top:48px">انتشار</h2>
+      <div class="code-block"><code>npm pack                                  # ساخت تاربال نهایی
+dsh plugin --profile web add ./dsh-*.tgz  # تست نصب محلی
+npm publish --registry https://registry.npmjs.org/   # انتشار (از میرور منتشر نکنید!)</code></div>
+      <div class="grid grid-3" style="margin-top:20px">
+        <div class="card"><h3>۱) npm</h3><p>بسته استاندارد npm — برای انتشار حتماً رجیستری رسمی، نه میرور ایرانی.</p></div>
+        <div class="card"><h3>۲) موضوع dsh-plugin</h3><p>به مخزن گیت‌هاب پلاگین، موضوع (topic) <code>dsh-plugin</code> را اضافه کنید تا کشف‌پذیر شوید.</p></div>
+        <div class="card"><h3>۳) بازار پلاگین</h3><p>ایندکس‌های بازار با plugin_market مرور و با plugin_manager نصب می‌شوند؛ ابزار plugin-market-generator برای ساخت ایندکس خصوصی.</p></div>
+      </div>
+      <p style="margin-top:26px">نسخه متنی کامل این صفحه: <code>docs-fa/06-ساخت-پلاگین-اختصاصی.md</code> و <code>docs-fa/08-انتشار-پلاگین.md</code></p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>🇮🇷 عامل‌های هوشمند ایران — Agent_mahai</span>
+      <span>مجوز MIT · پورتال آفلاین · فونت وزیرمتن</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

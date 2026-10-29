@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رفع مشکلات رایج در ایران — عامل‌های هوشمند ایران</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230E7A3D' d='M50 4 90 27 90 73 50 96 10 73 10 27Z'/%3E%3Cpath fill='%23FAF9F6' d='M50 20 76 35 76 65 50 80 24 65 24 35Z'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">
+      <svg class="star" viewBox="0 0 100 100" aria-hidden="true">
+        <path fill="#0E7A3D" d="M50 4 90 27 90 73 50 96 10 73 10 27Z"/>
+        <path fill="#FAF9F6" d="M50 20 76 35 76 65 50 80 24 65 24 35Z"/>
+        <path fill="#C62828" d="M50 34 64 42 64 58 50 66 36 58 36 42Z"/>
+      </svg>
+      <span>عامل‌های هوشمند ایران<small>Agent_mahai · نسخه بومی DeepSeek Harness</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="منو">☰</button>
+    <nav class="main-nav">
+      <a href="index.html">خانه</a>
+      <a href="install.html">نصب</a>
+      <a href="tools.html">ابزارها</a>
+      <a href="plugins.html">پلاگین‌نویسی</a>
+      <a href="troubleshooting.html">رفع مشکلات ایران</a>
+      <a href="git.html">گردش کار گیت</a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="crumb"><a href="index.html">خانه</a> / رفع مشکلات ایران</div>
+    <h1>رفع مشکلات رایج در ایران</h1>
+    <p>میرور، پروکسی، DNS، دسترسی به API مدل و خطاهای رایج — روی هر سؤال کلیک کنید.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+
+    <details class="faq" open>
+      <summary>npx خطای 403 یا Timeout می‌دهد — چه کنم؟</summary>
+      <div class="faq-body">
+        <p>رجیستری رسمی npm برای IPهای ایران گاهی محدود است. میرور ایرانی تنظیم کنید:</p>
+        <div class="code-block"><code>npm config set registry https://registry.npmjs.ir/
+npm ping
+npx @deepseek-ai/dsh web</code></div>
+        <p>یا اسکریپت آماره: <code>bash scripts/setup-iran.sh</code> (لینوکس/مک) — <code>scripts\setup-iran.ps1</code> (ویندوز).</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>چطور پروکسی را برای همه ابزارها تنظیم کنم؟</summary>
+      <div class="faq-body">
+        <p>متغیرهای محیطی استاندارد HTTP — اکثر ابزارها (npm، pnpm، گیت، curl) می‌فهمند:</p>
+        <div class="code-block"><code>export HTTP_PROXY=http://127.0.0.1:8118
+export HTTPS_PROXY=http://127.0.0.1:8118
+export NO_PROXY=localhost,127.0.0.1</code></div>
+        <p>مخصوص npm:</p>
+        <div class="code-block"><code>npm config set proxy http://127.0.0.1:8118
+npm config set https-proxy http://127.0.0.1:8118</code></div>
+        <p>مخصوص گیت:</p>
+        <div class="code-block"><code>git config --global http.proxy http://127.0.0.1:8118</code></div>
+        <div class="alert danger"><span class="ic">⚠️</span><div>همه ترافیک (از جمله کلیدهای API) از پروکسی رد می‌شود — از سرویس قابل‌اعتماد استفاده کنید.</div></div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>دسترسی به API مدل از ایران؟ (مهم‌ترین سؤال)</summary>
+      <div class="faq-body">
+        <p>سرویس API مدل‌ها از IP ایران معمولاً بسته است و پرداخت هم دشوار. سه راه‌حل واقعی:</p>
+        <p><b>۱. دروازه واسط ایرانی:</b> سرویس‌های واسط با پرداخت ریالی دسترسی OpenAI-compatible می‌دهند. در dsh: <b>Settings → Models → Add model provider → Custom model API</b> — Base URL و پروتکل (معمولاً <code>openai-completions</code>) و کلید را بدهید.</p>
+        <p><b>۲. سرور واسط خارج از کشور:</b> dsh را روی یک VPS کوچک اجرا کنید و با تونل SSH رابط وب را باز کنید:</p>
+        <div class="code-block"><code>ssh -L 3080:127.0.0.1:3080 user@your-vps
+# سپس در مرورگر خودتان: http://127.0.0.1:3080</code></div>
+        <p><b>۳. مدل داخلی:</b> هر دروازه داخلی با پروتکل OpenAI مستقیماً وصل می‌شود.</p>
+        <p>هر سه راه از پیکربندی رسمی dsh عبور می‌کنند — بدون دست‌کاری کد.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>git clone یا push کند است یا قطع می‌شود</summary>
+      <div class="faq-body">
+        <div class="code-block"><code># ۱) پروکسی
+git config --global http.proxy http://127.0.0.1:8118
+
+# ۲) برای مخازن بزرگ: کلون کم‌عمق
+git clone --depth 1 https://github.com/...
+
+# ۳) برای pushهای بزرگ (مثل این مخزن ~۲۰۰MB):
+git config --global http.postBuffer 524288000</code></div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>EADDRINUSE :3080 — پورت اشغال است</summary>
+      <div class="faq-body">
+        <p>پروسه قبلی dsh هنوز زنده است. ببندیدش:</p>
+        <div class="code-block"><code># لینوکس/مک
+lsof -i :3080
+kill &lt;PID&gt;
+
+# ویندوز
+netstat -ano | findstr :3080
+taskkill /PID &lt;PID&gt; /F</code></div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>پاسخ مدل نمی‌آید یا خطای 401 می‌گیرم</summary>
+      <div class="faq-body">
+        <p>کلید API نامعتبر است یا مسیر مدل بسته. در <b>Settings → Models</b> کلید را چک کنید. کلیدها فقط‌نوشتنی‌اند — برای تغییر، مقدار جدید وارد و ذخیره کنید. اگر از دروازه واسط استفاده می‌کنید، Base URL و پروتکل را با مستندات سرویس‌تان تطبیق دهید.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>برخی بسته‌ها از میرور ایرانی پیدا نمی‌شوند</summary>
+      <div class="faq-body">
+        <p>میرورها با تأخیر به‌روز می‌شوند. موقتاً به رسمی برگردید با پروکسی:</p>
+        <div class="code-block"><code>npm config set registry https://registry.npmjs.org/
+export HTTPS_PROXY=http://127.0.0.1:8118
+npx @deepseek-ai/dsh web</code></div>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>فارسی و RTL — فونت، اعداد، نیم‌فاصله؟</summary>
+      <div class="faq-body">
+        <p>پورتال این مخزن فونت وزیرمتن را محلی حمل می‌کند (بدون Google Fonts). برای پروژه‌های خودتان هم فونت محلی را توصیه می‌کنیم. اگر عامل فایل فارسی تولید کرد، در پیام‌تان صریح بگویید «ی و ک فارسی و نیم‌فاصله استاندارد» — یا یک ابزار پاکسازی رشته فارسی به‌شکل پلاگین بسازید (الگو در صفحه پلاگین‌نویسی).</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>الزامات نسخه (engines.dsh) برآورده نمی‌شود</summary>
+      <div class="faq-body">
+        <p>باندل پلاگین با نسخه dsh شما سازگار نیست — نصب به‌صورت حفاظتی بسته می‌شود. dsh را به‌روز کنید یا نسخه سازگار پلاگین را نصب کنید. «معافیت نسخه» با ریسک خرابی همراه است؛ فقط با آگاهی کامل.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>چک‌لیست نهایی محیط ایرانی</summary>
+      <div class="faq-body">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>مورد</th><th>بررسی</th></tr></thead>
+            <tbody>
+              <tr><td>Node.js نسخه ۲۰+</td><td><code>node --version</code></td></tr>
+              <tr><td>میرور npm</td><td><code>npm config get registry</code></td></tr>
+              <tr><td>پروکسی/سرور واسط</td><td>متغیرهای محیطی یا VPS</td></tr>
+              <tr><td>مدل وصل</td><td>Settings → Models — یک تست بفرستید</td></tr>
+              <tr><td>امنیت کلیدها</td><td>هیچ کلیدی در مخزن/لاگ نیست؟</td></tr>
+              <tr><td>ایزوله‌سازی</td><td>کارهای حساس در VM/کانتینر + بکاپ</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>🇮🇷 عامل‌های هوشمند ایران — Agent_mahai</span>
+      <span>مجوز MIT · پورتال آفلاین · فونت وزیرمتن</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

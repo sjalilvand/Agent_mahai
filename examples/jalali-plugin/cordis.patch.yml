@@ -1,0 +1,6 @@
+# لایه پیکربندی پلاگین تقویم شمسی
+# با این دستور به ترکیب اضافه می‌شود:
+#   pnpm dsh web --patch ./cordis.patch.yml
+- insert:
+    - id: jalali
+      name: dsh-jalali-plugin
