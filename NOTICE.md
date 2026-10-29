@@ -12,13 +12,13 @@
 
 ## فونت وزیرمتن
 
-فایل‌های `portal/assets/fonts/Vazirmatn-*.woff2` از پروژه [Vazirmatn](https://github.com/rastikerdar/vazirmatn) (نسخه 33.003) گرفته شده‌اند:
+فایل‌های `docs/assets/fonts/Vazirmatn-*.woff2` از پروژه [Vazirmatn](https://github.com/rastikerdar/vazirmatn) (نسخه 33.003) گرفته شده‌اند:
 
 - کپی‌رایت © صابر راستی‌کردار — مجوز SIL Open Font License 1.1
 
 ## لوگو و هویت
 
-- نام تجاری «ماه‌ای» (MahAI)، ارم (لوگو) و هویت بصری این توزیع متعلق به **شرکت ماه‌افزار هوشمند رسا** است. فایل ارم: [`portal/assets/logo.png`](portal/assets/logo.png)
+- نام تجاری «ماه‌ای» (MahAI)، ارم (لوگو) و هویت بصری این توزیع متعلق به **شرکت ماه‌افزار هوشمند رسا** است. فایل ارم: [`docs/assets/logo.png`](docs/assets/logo.png)
 - نام‌ها و نشان‌های «DeepSeek» متعلق به DeepSeek AI است و استفاده در این مخزن فقط برای معرفی سازگاری و استناد به پروژه اصلی است؛ «ماه‌ای» محصول رسمی DeepSeek نیست و مورد تأیید رسمی آن شرکت نیز نیست.
 
 </div>
