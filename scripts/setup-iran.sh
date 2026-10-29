@@ -114,4 +114,34 @@ log "آدرس کامل همراه توکن در خط «dsh web: http://127.0.0.1
 echo ""
 log "اگر روزی رابط انگلیسی شد (به‌روزرسانی dsh)، یک‌بار بزنید: bash scripts/patch-mahai-ui.sh"
 echo ""
-exec npx -y @deepseek-ai/dsh web
+log "یادآوری مهم: آدرس برنامه فقط «127.0.0.1:3080» نیست — باید کامل و همراه «?token=...» باشد؛ در غیر این صورت مرورگر صفحهٔ انگلیسی «dsh web authentication required» نشان می‌دهد."
+echo ""
+
+# اجرای موتور + شکار خودکار خط «dsh web: …?token=…» (کلیپ‌بورد در صورت وجود ابزار)
+MAHAI_URL=""
+re='dsh web:[[:space:]]*(https?://[^[:space:]]+)'
+npx -y @deepseek-ai/dsh web 2>&1 | while IFS= read -r line; do
+  printf '%s\n' "$line"
+  if [[ -z "${MAHAI_URL:-}" && "$line" =~ $re ]]; then
+    MAHAI_URL="${BASH_REMATCH[1]}"
+    echo ""
+    printf '\033[1;36m  ==============================================================\033[0m\n'
+    printf '\033[1;33m   آدرس کامل برنامهٔ ماه‌ای (همین را در مرورگر باز کنید):\033[0m\n'
+    printf '\033[1;33m   %s\033[0m\n' "$MAHAI_URL"
+    if   command -v xclip  >/dev/null 2>&1; then printf '%s' "$MAHAI_URL" | xclip  -selection clipboard 2>/dev/null || true
+    elif command -v xsel   >/dev/null 2>&1; then printf '%s' "$MAHAI_URL" | xsel   --clipboard            2>/dev/null || true
+    elif command -v wl-copy >/dev/null 2>&1; then printf '%s' "$MAHAI_URL" | wl-copy                      2>/dev/null || true
+    elif command -v pbcopy >/dev/null 2>&1; then printf '%s' "$MAHAI_URL" | pbcopy                        2>/dev/null || true
+    fi
+    if [[ "$MAHAI_URL" == *token=* ]]; then
+      printf '\033[1;36m   ✓ آدرس در کلیپ‌بورد کپی شد — در نوار آدرس مرورگر فقط Ctrl+V بزنید.\033[0m\n'
+    else
+      printf '\033[1;31m   ⚠ توکن در خط بالا دیده نشد؛ کل خط dsh web را دستی کپی کنید.\033[0m\n'
+    fi
+    printf '\033[1;31m   ⚠ باز کردن تنها 127.0.0.1:3080 (بدون توکن) صفحهٔ «authentication required» می‌دهد — این خرابی پوسته نیست!\033[0m\n'
+    printf '\033[1;36m   بعد از باز شدن: Ctrl+F5 بزنید و برند «پوستهٔ فارسی ۷» را در سایدبار ببینید.\033[0m\n'
+    printf '\033[1;33m   دقت: با هر اجرای مجدد سرور، توکن عوض می‌شود — همیشه آخرین خط را کپی کنید.\033[0m\n'
+    printf '\033[1;36m  ==============================================================\033[0m\n'
+    echo ""
+  fi
+done

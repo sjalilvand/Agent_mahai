@@ -105,4 +105,31 @@ Write-Log "آدرس کامل همراه توکن در خط «dsh web: http://127
 Write-Host ""
 Write-Log "اگر روزی رابط انگلیسی شد (به‌روزرسانی dsh)، یک‌بار بزنید: powershell -ExecutionPolicy Bypass -File scripts\patch-mahai-ui.ps1"
 Write-Host ""
-npx -y "@deepseek-ai/dsh" web
+Write-Log "یادآوری مهم: آدرس برنامه فقط «127.0.0.1:3080» نیست — باید کامل و همراه «?token=...» باشد؛ در غیر این صورت مرورگر صفحهٔ انگلیسی «dsh web authentication required» نشان می‌دهد."
+Write-Host ""
+
+# اجرای موتور + شکار خودکار خط «dsh web: …?token=…»
+# آدرس کامل در کلیپ‌بورد کپی می‌شود تا کاربر فقط در مرورگر Ctrl+V بزند.
+$script:MahaiUrl = $null
+npx -y "@deepseek-ai/dsh" web 2>&1 | ForEach-Object {
+    $line = "$_"
+    Write-Host $line
+    if (-not $script:MahaiUrl -and $line -match 'dsh web:\s*(https?://\S+)') {
+        $script:MahaiUrl = $Matches[1].Trim()
+        try { Set-Clipboard -Value $script:MahaiUrl } catch { }
+        Write-Host ""
+        Write-Host "  ==============================================================" -ForegroundColor Cyan
+        Write-Host "   آدرس کامل برنامهٔ ماه‌ای (همین را در مرورگر باز کنید):" -ForegroundColor Yellow
+        Write-Host "   $($script:MahaiUrl)" -ForegroundColor Yellow
+        if ($script:MahaiUrl -like '*token=*') {
+            Write-Host "   ✓ آدرس به کلیپ‌بورد کپی شد — در نوار آدرس مرورگر فقط Ctrl+V بزنید." -ForegroundColor Cyan
+        } else {
+            Write-Host "   ⚠ توکن در خط بالا دیده نشد؛ کل خط dsh web را دستی کپی کنید." -ForegroundColor Red
+        }
+        Write-Host "   ⚠ باز کردن تنها 127.0.0.1:3080 (بدون توکن) صفحهٔ «authentication required» می‌دهد — این خرابی پوسته نیست!" -ForegroundColor Red
+        Write-Host "   بعد از باز شدن: Ctrl+F5 بزنید و برند «پوستهٔ فارسی ۷» را در سایدبار ببینید." -ForegroundColor Cyan
+        Write-Host "   دقت: با هر اجرای مجدد سرور، توکن عوض می‌شود — همیشه آخرین خط را کپی کنید." -ForegroundColor Yellow
+        Write-Host "  ==============================================================" -ForegroundColor Cyan
+        Write-Host ""
+    }
+}
