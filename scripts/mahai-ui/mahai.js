@@ -2,14 +2,19 @@
    ماه‌ای (MahAI) — مترجم زندهٔ رابط وب dsh به فارسی
    محصول شرکت ماه‌افزار هوشمند رسا
    ============================================================
-   نکتهٔ مهم v9 — چیدمان:
-   نسخه‌های ≤۸ روی <html> مقدار dir="rtl" می‌گذاشتند و چیدمان
-   flex/grid اپ (که برای چپ‌به‌راست طراحی شده) کاملاً آینه می‌شد:
-   سایدبار بیرون از صفحه می‌افتاد، نیمهٔ صفحه خالی می‌شد و ستون‌ها
-   از لبه بریده می‌شدند («صفحه نصفه می‌آمد»). در v9 چیدمان اپ
-   دست‌نخورده می‌ماند (چپ‌به‌راست) و فقط «متن‌ها» فارسی می‌شوند؛
-   برای خوانایی درست جملات فارسی، جهت متنِ درون عناصر متنی با
-   unicode-bidi: plaintext از mahai.css تنظیم می‌شود.
+   نکتهٔ مهم v10 — راست‌چین‌سازی داده‌محور:
+   نسخه‌های ≤۸ dir="rtl" را روی <html> می‌گذاشتند و چیدمان اپ
+   (که با ویژگی‌های فیزیکی left/right ساخته شده) آینه و نیمه می‌شد.
+   v9 چیدمان را کاملاً دست‌نخورده گذاشت، اما متن فارسی داخل ردیف‌های
+   چپ‌چین، «چپ‌چین» دیده می‌شد. v10 میانهٔ طلایی است: فقط «ردیف‌ها و
+   بلوک‌های سادهٔ متنی‌ای که متنشان فارسی شد» راست‌چین می‌شوند
+   (rtlFit) — آیکن‌ها راست می‌افتند و متن از راست شروع می‌شود؛
+   ردیف‌های انگلیسی/کد و اسکلت صفحه (ستون‌های اصلی، سایدبار،
+   پوشه‌ها) هرگز flip نمی‌شوند. خطای احتمالی حداکثر «یک ردیف» است،
+   نه نیمهٔ صفحه.
+  نکتهٔ v9 — چیدمان:
+   چیدمان flex/grid اپ دست‌نخورده می‌ماند؛ جهت متنِ درون عناصر
+   متنی با unicode-bidi: plaintext از mahai.css تنظیم می‌شود.
    روش کار: یک دیکشنری «متن کامل انگلیسی/چینی ← فارسی» روی گره‌های
    متنی DOM اعمال می‌شود (MutationObserver). فقط تطبیق «کامل» ترجمه
    می‌شود؛ بنابراین متن پیام‌های خود کاربر هرگز دست‌نخورده می‌ماند.
@@ -27,7 +32,7 @@
 
   /* نسخهٔ پوستهٔ فارسی — با هر انتشار +۱ می‌شود. در نوار برند سایدبار نمایش
      داده می‌شود تا کاربر ببیند کدام نسخه در مرورگرش اجراست (تشخیص کش). */
-  var SKIN_VER = '9';
+  var SKIN_VER = '10';
   try {
     window.__MAHAI_SKIN = SKIN_VER;
     console.log('%c ماه‌ای — پوستهٔ فارسی نسخهٔ ' + SKIN_VER + ' ',
@@ -966,7 +971,38 @@
     'Browse files in this session\u2019s workspace': 'مرور فایل‌های فضای کاری این گفت‌وگو',
     'New terminal': 'پایانهٔ جدید',
     'Run commands in the Session workspace': 'اجرای دستورها در فضای کاری گفت‌وگو',
+    'Run commands': 'اجرای دستورها',
     'More tools': 'ابزارهای بیشتر',
+
+    /* --- منوی افزونه‌ها و پنل‌های ران‌تایم سرور (اسکرین‌شات کاربر ۳۰ اکتبر) --- */
+    'Trajectory': 'مسیر اجرا',
+    'Browse other plugins': 'مرور افزونه‌های دیگر',
+    'Create your plugin': 'ساخت افزونهٔ خودتان',
+    'Browse plugins': 'مرور افزونه‌ها',
+    'Create plugin': 'ساخت افزونه',
+    'Create a plugin': 'ساخت افزونه',
+    'My plugins': 'افزونه‌های من',
+    'Plugin details': 'جزئیات افزونه',
+    'Install': 'نصب',
+    'Uninstall': 'حذف نصب',
+    'Enable': 'فعال‌سازی',
+    'Disable': 'غیرفعال‌سازی',
+    'Enabled': 'فعال',
+    'Disabled': 'غیرفعال',
+    'Version': 'نسخه',
+    'Author': 'سازنده',
+    'Source': 'منبع',
+    /* معادل‌های چینی همان پنل‌ها — سرور ممکن است رشتهٔ چینی سرو کند */
+    '轨迹': 'مسیر اجرا',
+    '浏览其他插件': 'مرور افزونه‌های دیگر',
+    '创建你的插件': 'ساخت افزونهٔ خودتان',
+    '创建您的插件': 'ساخت افزونهٔ خودتان',
+    '浏览插件': 'مرور افزونه‌ها',
+    '创建插件': 'ساخت افزونه',
+    '我的插件': 'افزونه‌های من',
+    '新建终端': 'پایانهٔ جدید',
+    '更多工具': 'ابزارهای بیشتر',
+    '执行命令': 'اجرای دستورها',
     'commands, @ files or sessions': 'دستورها، @فایل‌ها یا گفت‌وگوها',
     '… commands, @ files or sessions': '… دستورها، @فایل‌ها یا گفت‌وگوها',
     '…tok/s': '…توکن/ث'
@@ -1167,16 +1203,77 @@
     for (var i = 0; i < changes.length; i++) {
       var n = changes[i][0];
       n.nodeValue = changes[i][1];
-      /* اگر والد «برگِ فقط‌متنی» باشد و متن فارسی شده باشد، جهت متنِ همان برگ
-         راست‌چین می‌شود تا جملات ترکیبی (مثل «۱ نوبت · ۰ گام») در پاراگرافِ
-         چپ‌به‌راستِ اپ به‌هم نریزند. چون والد هیچ فرزند عنصری ندارد، هیچ
-         اثری بر چیدمان flex/grid اپ نمی‌گذارد. */
-      var p = n.parentElement;
-      if (p && !p.hasAttribute('dir') && p.children.length === 0 &&
-          /[\u0600-\u06FF]/.test(n.nodeValue) && n.nodeValue.length > 1) {
-        p.setAttribute('dir', 'rtl');
+      rtlFit(n);
+    }
+  }
+
+  /* ---------- ۴٫۵) راست‌چین‌سازی داده‌محور (v10) ----------
+     به‌جای dir="rtl" سراسری (که در v7 اسکلت صفحه را آینه و نیمه
+     می‌کرد)، فقط «محفظهٔ متنی ساده‌ای که متن فارسی گرفت» راست‌چین
+     می‌شود:
+       • ردیف flex با حداکثر ۴ فرزند ساده (آیکن+برچسب منوها و
+         آیتم‌های سایدبار) → آینه می‌شود؛ آیکن راست، متن راست‌چین.
+       • بلوک سادهٔ متن (تیتر، برچسب، کارت) → text-align به راست
+         می‌رود و آیکن‌های بالای کارت هم راست می‌افتند.
+     محفظه‌های پیچیده (ستون‌های اصلی صفحه، سایدبار، شبکه‌های تو در تو،
+     ورودی‌ها و کدها) هرگز flip نمی‌شوند — بدترین حالت فقط «یک ردیف»
+     است، نه نصفه‌شدن صفحه. چون فقط پس از فارسی‌شدنِ متن همان محفظه
+     رخ می‌دهد، ردیف‌های انگلیسی/کد سرِ جایشان می‌مانند. */
+  function rtlIsSvg(e) {
+    /* آیکن‌های svg (lucide و...) در شمارش عمق خنثی‌اند */
+    return !!e && (e.tagName === 'svg' || e.namespaceURI === 'http://www.w3.org/2000/svg');
+  }
+  function rtlSimpleContainer(el) {
+    /* همهٔ فرزندان عنصری باید برگ یا یک ردیف سادهٔ برگ‌ها باشند (عمق ≤۲)؛
+       svg آیکن‌ها خنثی‌اند و شمرده نمی‌شوند */
+    var kids = el.children;
+    if (!kids || kids.length > 4) return false;
+    for (var i = 0; i < kids.length; i++) {
+      if (rtlIsSvg(kids[i])) continue;
+      var gk = kids[i].children;
+      if (!gk || gk.length === 0) continue;         /* برگ — خوب */
+      if (gk.length > 4) return false;              /* فرزند شلوغ — رد شو */
+      for (var j = 0; j < gk.length; j++) {
+        if (rtlIsSvg(gk[j])) continue;
+        if (gk[j].children && gk[j].children.length) return false; /* عمق ۳ — ممنوع */
       }
     }
+    return true;
+  }
+  function rtlCanFlip(el) {
+    if (!el || el === document.body || el === html) return false;
+    var id = el.id || '';
+    if (id === 'mahai-brandbar' || id === 'mahai-hero' || id === 'mahai-hero-tag' ||
+        id === 'root' || id === 'app' || id.indexOf('mahai-') === 0) return false;
+    /* ورودی، کد، رسانه و محتوای کاربر هرگز داخل flip نیایند */
+    if (el.querySelector && el.querySelector('input,textarea,select,code,pre,canvas,video,iframe,embed,object,[contenteditable="true"]')) return false;
+    return true;
+  }
+  function rtlFit(textNode) {
+    /* زنجیرهٔ «محفظه‌های ساده» را از برگ به بالا بساز (سقف ۳ سطح) و
+       بالاترین محفظهٔ سادهٔ زنجیره را flip کن — تا «کل کارت/کل منو»
+       راست‌چین شود، نه فقط تیترش. اگر زنجیره به محفظهٔ پیچیده
+       (ستون‌های اصلی صفحه، ورودی‌ها، کدها) خورد، همان‌جا قطع می‌شود. */
+    var chain = [];
+    var n = textNode.parentElement;
+    for (var depth = 0; n && n !== document.body && depth < 5 && chain.length < 3; depth++) {
+      var d;
+      try { d = getComputedStyle(n); } catch (e) { return; }
+      if (d.direction === 'rtl') return;            /* جدِ راست‌چین هست — کافی است */
+      var disp = d.display;
+      if (disp === 'inline' || disp === 'contents') { n = n.parentElement; continue; }
+      if (disp === 'none' || disp === 'hidden') return;
+      var isRow = (disp === 'flex' || disp === 'inline-flex' || disp === 'grid' || disp === 'inline-grid') &&
+                  d.flexDirection.indexOf('row') === 0;
+      var isCol = (disp === 'flex' || disp === 'inline-flex') && d.flexDirection.indexOf('column') === 0;
+      var isBlock = disp === 'block' || disp === 'flow-root' || disp === 'list-item' ||
+                    disp === 'inline-block' || disp === 'table' || disp.indexOf('table-row') === 0;
+      if (!(isRow || isCol || isBlock)) return;
+      if (!rtlSimpleContainer(n) || !rtlCanFlip(n)) break; /* زنجیره اینجا تمام */
+      chain.push(n);
+      n = n.parentElement;
+    }
+    if (chain.length) chain[chain.length - 1].setAttribute('dir', 'rtl');
   }
 
   function translateAttrs(root) {

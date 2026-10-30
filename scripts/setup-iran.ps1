@@ -127,7 +127,7 @@ npx -y "@deepseek-ai/dsh" web 2>&1 | ForEach-Object {
             Write-Host "   ⚠ توکن در خط بالا دیده نشد؛ کل خط dsh web را دستی کپی کنید." -ForegroundColor Red
         }
         Write-Host "   ⚠ باز کردن تنها 127.0.0.1:3080 (بدون توکن) صفحهٔ «authentication required» می‌دهد — این خرابی پوسته نیست!" -ForegroundColor Red
-        Write-Host "   بعد از باز شدن: Ctrl+F5 بزنید و برند «پوستهٔ فارسی ۹» را در سایدبار ببینید." -ForegroundColor Cyan
+        Write-Host "   بعد از باز شدن: Ctrl+F5 بزنید و برند «پوستهٔ فارسی ۱۰» را در سایدبار ببینید." -ForegroundColor Cyan
         Write-Host "   دقت: با هر اجرای مجدد سرور، توکن عوض می‌شود — همیشه آخرین خط را کپی کنید." -ForegroundColor Yellow
         Write-Host "  ==============================================================" -ForegroundColor Cyan
         Write-Host ""
