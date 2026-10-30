@@ -1,25 +1,33 @@
 /* ============================================================
    ماه‌ای (MahAI) — مترجم زندهٔ رابط وب dsh به فارسی
    محصول شرکت ماه‌افزار هوشمند رسا
-   روش کار: یک دیکشنری «متن کامل انگلیسی ← فارسی» روی گره‌های متنی
-   DOM اعمال می‌شود (MutationObserver). فقط تطابق «کامل» ترجمه
+   ============================================================
+   نکتهٔ مهم v9 — چیدمان:
+   نسخه‌های ≤۸ روی <html> مقدار dir="rtl" می‌گذاشتند و چیدمان
+   flex/grid اپ (که برای چپ‌به‌راست طراحی شده) کاملاً آینه می‌شد:
+   سایدبار بیرون از صفحه می‌افتاد، نیمهٔ صفحه خالی می‌شد و ستون‌ها
+   از لبه بریده می‌شدند («صفحه نصفه می‌آمد»). در v9 چیدمان اپ
+   دست‌نخورده می‌ماند (چپ‌به‌راست) و فقط «متن‌ها» فارسی می‌شوند؛
+   برای خوانایی درست جملات فارسی، جهت متنِ درون عناصر متنی با
+   unicode-bidi: plaintext از mahai.css تنظیم می‌شود.
+   روش کار: یک دیکشنری «متن کامل انگلیسی/چینی ← فارسی» روی گره‌های
+   متنی DOM اعمال می‌شود (MutationObserver). فقط تطبیق «کامل» ترجمه
    می‌شود؛ بنابراین متن پیام‌های خود کاربر هرگز دست‌نخورده می‌ماند.
-   برای نمایانی دوباره پس از به‌روزرسانی dsh، پچ index.html را
-   دوباره اعمال کنید (در scripts/setup-iran خودکار است).
    ============================================================ */
 (function () {
   'use strict';
 
-  /* ---------- ۱) راست‌چین و زبان ---------- */
+  /* ---------- ۱) زبان صفحه — بدون دست‌کاری جهت چیدمان ---------- */
   var html = document.documentElement;
   html.setAttribute('lang', 'fa');
-  html.setAttribute('dir', 'rtl');
+  /* ترمیم پوسته‌های قدیمی: اگر نسخهٔ قبل dir="rtl" گذاشته بود، بردار */
+  if (html.getAttribute('dir') === 'rtl') html.removeAttribute('dir');
 
   var TITLE = 'ماه‌ای — عامل هوشمند سازمانی | ماه‌افزار هوشمند رسا';
 
   /* نسخهٔ پوستهٔ فارسی — با هر انتشار +۱ می‌شود. در نوار برند سایدبار نمایش
      داده می‌شود تا کاربر ببیند کدام نسخه در مرورگرش اجراست (تشخیص کش). */
-  var SKIN_VER = '8';
+  var SKIN_VER = '9';
   try {
     window.__MAHAI_SKIN = SKIN_VER;
     console.log('%c ماه‌ای — پوستهٔ فارسی نسخهٔ ' + SKIN_VER + ' ',
@@ -33,19 +41,24 @@
     'New session': 'گفت‌وگوی جدید',
     'Open sidebar': 'باز کردن نوار کناری',
     'Collapse sidebar': 'جمع کردن نوار کناری',
+    'Toggle left sidebar': 'نمایش/جمع کردن نوار کناری',
     'Global panels': 'پنل‌های سراسری',
     'Workspaces': 'فضاهای کاری',
     'Default workspace': 'فضای کاری پیش‌فرض',
     'Add workspace': 'افزودن فضای کاری',
+    'Add workspace…': 'افزودن فضای کاری…',
     'Sessions': 'گفت‌وگوها',
     'Chat': 'گفت‌وگو',
+    'Dialogue': 'گفت‌وگو',
     'Plugins': 'افزونه‌ها',
     'Automation tasks': 'کارهای خودکار',
     'Automation task': 'کار خودکار',
     'More': 'بیشتر',
     'Untitled': 'بدون عنوان',
     'Running': 'در حال اجرا',
+    'Not running': 'در حال اجرا نیست',
     'Idle': 'آماده',
+    'In progress': 'در حال انجام',
     'Filter sessions': 'پالایش گفت‌وگوها',
     'Search sessions': 'جست‌وجوی گفت‌وگوها',
     'Search session names': 'جست‌وجوی نام گفت‌وگوها',
@@ -59,9 +72,11 @@
     'All conversations (show archived)': 'همهٔ گفت‌وگوها (نمایش بایگانی)',
     'Archived only': 'فقط بایگانی‌شده‌ها',
     'Show less': 'نمایش کمتر',
+    'Show more': 'نمایش بیشتر',
     'View options': 'گزینه‌های نمایش',
     'Group by': 'گروه‌بندی بر اساس',
     'Order by': 'مرتب‌سازی بر اساس',
+    'In one list': 'در یک فهرست',
     'Manual': 'دستی',
     'Last updated': 'آخرین به‌روزرسانی',
     'Ungrouped': 'گروه‌بندی‌نشده',
@@ -73,6 +88,7 @@
     'Workspace name': 'نام فضای کاری',
     'Session name': 'نام گفت‌وگو',
     'Delete workspace': 'حذف فضای کاری',
+    'Deleting workspace…': 'در حال حذف فضای کاری…',
     'Fork session': 'انشعاب از گفت‌وگو',
     'Archive session': 'بایگانی گفت‌وگو',
     'Unarchive session': 'خروج از بایگانی',
@@ -92,6 +108,19 @@
     'Stop and archive this session?': 'این گفت‌وگو متوقف و بایگانی شود؟',
     'Work that will be stopped': 'کاری که متوقف خواهد شد',
     'The turn in progress': 'نوبت در حال اجرا',
+    'Stopping and archiving…': 'در حال توقف و بایگانی…',
+    'Session archived. You can ': 'گفت‌وگو بایگانی شد. می‌توانید ',
+    'Session stopped and archived. You can ': 'گفت‌وگو متوقف و بایگانی شد. می‌توانید ',
+    'Archived sessions cannot be opened. Unarchive it to view.': 'گفت‌وگوی بایگانی‌شده باز نمی‌شود؛ برای مشاهده از بایگانی خارجش کنید.',
+    'Pin failed. Try again later.': 'سنجاق ناموفق بود. بعداً تلاش کنید.',
+    'Unpin failed. Try again later.': 'برداشتن سنجاق ناموفق بود. بعداً تلاش کنید.',
+    'Open original session': 'باز کردن گفت‌وگوی اصلی',
+    'Open the original session to complete migration before creating a branch.': 'برای انشعاب، نخست گفت‌وگوی اصلی را باز کنید تا مهاجرت کامل شود.',
+    'Session hierarchy': 'سلسله‌مراتب گفت‌وگو',
+    'More conversation views': 'نمای‌های بیشتر گفت‌وگو',
+    'Searching session history…': 'جست‌وجوی تاریخچهٔ گفت‌وگوها…',
+    'No matches': 'موردی یافت نشد',
+    'Loading workspaces…': 'در حال بارگذاری فضاهای کاری…',
     'Waiting for approval': 'در انتظار تأیید',
     'Plan awaiting review': 'برنامه در انتظار بازبینی',
     'Waiting for answer': 'در انتظار پاسخ',
@@ -104,6 +133,10 @@
     'Choose again': 'انتخاب دوباره',
     'Directory picker unavailable': 'انتخابگر پوشه در دسترس نیست',
     'Unable to create default workspace. Use Choose workspace to select a folder.': 'ساخت فضای کاری پیش‌فرض ممکن نشد. از «انتخاب فضای کاری» برای انتخاب پوشه استفاده کنید.',
+    'Selecting or adding a workspace': 'در حال انتخاب یا افزودن فضای کاری',
+    'This session has no completed turn': 'این گفت‌وگو نوبت کامل‌شده‌ای ندارد',
+    'Could not fork the session. Try again.': 'انشعاب از گفت‌وگو ممکن نشد. دوباره تلاش کنید.',
+    'This session is already in use, possibly by another running DSH instance (such as dsh web or the desktop app). Quit other running DSH instances and try again.': 'این گفت‌وگو همین حالا در استفاده است؛ شاید نمونهٔ دیگری از ماه‌ای (مثل dsh web یا برنامهٔ رومیزی) آن را باز کرده. نمونه‌های دیگر را ببندید و دوباره تلاش کنید.',
 
     /* دیالوگ شروع (Get started) */
     'Welcome to': 'خوش آمدید به',
@@ -155,6 +188,7 @@
     'Model unavailable. Please sign in and try again.': 'مدل در دسترس نیست. لطفاً وارد شوید و دوباره تلاش کنید.',
     'You have signed out of your account, please log in again.': 'از حساب خود خارج شده‌اید؛ لطفاً دوباره وارد شوید.',
     'Back to DeepSeek Harness': 'بازگشت به ماه‌ای',
+    'DeepSeek Harness': 'ماه‌ای',
 
     /* انتخاب مدل */
     'Select model': 'انتخاب مدل',
@@ -167,7 +201,12 @@
     'Clear search ': 'پاک کردن جست‌وجو',
     'No matching models.': 'مدل منطبقی وجود ندارد.',
     'No models available': 'مدلی در دسترس نیست',
+    'No models available.': 'مدلی در دسترس نیست.',
     'No efforts available for this model.': 'این مدل سطح استدلالی ندارد.',
+    'This model provides no reasoning effort levels.': 'این مدل سطح استدلالی ندارد.',
+    'Select the model for this conversation': 'انتخاب مدل برای این گفت‌وگو',
+    'Model and reasoning effort': 'مدل و سطح استدلال',
+    'Refreshing model list…': 'در حال نوسازی فهرست مدل‌ها…',
     'Reload': 'بارگذاری دوباره',
     'DeepSeek API key': 'کلید API دیپ‌سیک',
     'Failed to load: {message}': 'بارگذاری ناموفق: {message}',
@@ -221,6 +260,8 @@
     'Subtask status updated': 'وضعیت زیرکار به‌روزرسانی شد',
     'GitHub event received': 'رویداد GitHub دریافت شد',
     'External event received': 'رویداد بیرونی دریافت شد',
+    'Background task updated': 'کار پس‌زمینه به‌روزرسانی شد',
+    'Plugin status updated': 'وضعیت افزونه به‌روزرسانی شد',
     'This notification triggered this response.': 'این اعلان، این پاسخ را فعال کرد.',
     'Completed': 'انجام شد',
     'Failed': 'ناموفق',
@@ -241,6 +282,7 @@
     'Back to bottom': 'بازگشت به پایین',
     'Deep diving': 'بررسی عمیق',
     'Turn navigation': 'پیمایش نوبت‌ها',
+    'Turn usage': 'مصرف نوبت',
     'Performance & usage': 'کارایی و مصرف',
     'Choose how much performance and usage information to show': 'میزان نمایش اطلاعات کارایی و مصرف را انتخاب کنید',
     'Compact': 'فشرده',
@@ -253,6 +295,12 @@
     'On next message': 'با پیام بعدی',
     'Standard': 'استاندارد',
     'Verbose': 'کامل',
+    'Open chat links in': 'باز کردن پیوندهای گفت‌وگو در',
+    'Choose where to open web links': 'انتخاب محل باز شدن پیوندهای وب',
+    'In-App Sidebar': 'نوار کناری برنامه',
+    'Default Browser': 'مرورگر پیش‌فرض',
+    'Send behavior while busy': 'رفتار ارسال هنگام مشغول بودن',
+    'What Enter and the Send button do while the agent is running; Cmd/Ctrl+Enter uses the other behavior': 'رفتار Enter و دکمهٔ ارسال هنگام اجرای عامل؛ Cmd/Ctrl+Enter رفتار دیگر را انجام می‌دهد',
     'Couldn’t open file': 'باز کردن فایل ممکن نشد',
     'Couldn’t open this file': 'باز کردن این فایل ممکن نشد',
     'Extra content block': 'بلوک محتوای اضافی',
@@ -276,16 +324,264 @@
     'Send message': 'ارسال پیام',
     'Queue message': 'صف کردن پیام',
     'Steer message': 'هدایت پیام',
-    'Send behavior while busy': 'رفتار ارسال هنگام مشغول بودن',
     'Message delivered': 'پیام تحویل شد',
     'Ask question': 'پرسیدن پرسش',
     'Edit queued message': 'ویرایش پیام صف‌شده',
     'Save queued message': 'ذخیرهٔ پیام صف‌شده',
     'Remove queued message': 'حذف پیام صف‌شده',
     'Steer queued message': 'هدایت پیام صف‌شده',
+    'Cancel editing': 'لغو ویرایش',
     'Copied': 'کپی شد',
+    'Stop generating': 'توقف تولید',
+    'Session unavailable': 'گفت‌وگو در دسترس نیست',
+    'Cmd/Ctrl+Enter steers all queued messages': '‏Cmd/Ctrl+Enter همهٔ پیام‌های صف‌شده را هدایت می‌کند',
+    'Use the complementary Queue / Steer action': 'از کنش دیگر (صف/هدایت) استفاده کنید',
+    'New line': 'خط جدید',
+    'Open command menu': 'باز کردن منوی دستورها',
+    'Open reference menu': 'باز کردن منوی ارجاع‌ها',
+    'Edit failed: this message may have already started sending.': 'ویرایش ناموفق: شاید این پیام در حال ارسال شده باشد.',
+    'Removal failed: this message may have already started sending.': 'حذف ناموفق: شاید این پیام در حال ارسال شده باشد.',
+    'Steering failed. Try again.': 'هدایت ناموفق بود. دوباره تلاش کنید.',
+    'Steering is available only while the agent is running': 'هدایت فقط هنگام اجرای عامل ممکن است',
+    'Contains non-text content; editing is not supported yet': 'محتوای غیرمتن دارد؛ ویرایش هنوز پشتیبانی نمی‌شود',
+    'Could not fill the draft. Please try again shortly.': 'پر کردن پیش‌نویس ممکن نشد. اندکی بعد دوباره تلاش کنید.',
+    'Queued message image': 'تصویر پیام صف‌شده',
 
-    /* ابزارها و افزونه‌ها */
+    /* پیوست‌ها، فایل‌ها و تصاویر */
+    'Pending attachments': 'پیوست‌های در انتظار',
+    'Scroll attachments left': 'پیمایش پیوست‌ها به چپ',
+    'Scroll attachments right': 'پیمایش پیوست‌ها به راست',
+    'Drag files or images here to add them': 'فایل‌ها یا تصاویر را برای افزودن اینجا بکشید',
+    'Files and images cannot be added right now': 'فعلاً نمی‌توان فایل یا تصویر افزود',
+    'Pending images': 'تصاویر در انتظار',
+    'Pending files': 'فایل‌های در انتظار',
+    'View original': 'مشاهدهٔ اصلی',
+    'Original image': 'تصویر اصلی',
+    'Original image preview': 'پیش‌نمایش تصویر اصلی',
+    'Close original image preview': 'بستن پیش‌نمایش تصویر اصلی',
+    'Only PNG, JPG, WebP, and GIF images are supported': 'فقط تصاویر PNG، JPG، WebP و GIF پشتیبانی می‌شوند',
+    'Folders can only be added in the desktop app; add individual files in the browser': 'افزودن پوشه فقط در برنامهٔ رومیزی ممکن است؛ در مرورگر فایل‌های تکی اضافه کنید',
+    'Could not obtain the folder path; drag it in again': 'مسیر پوشه به‌دست نیامد؛ دوباره آن را بکشید',
+    'The path contains characters a reference cannot carry; rename it and try again': 'مسیر نویسه‌های ناسازگار دارد؛ نامش را تغییر دهید و دوباره تلاش کنید',
+    'Image resolution is too high; compress it and try again': 'وضوح تصویر بیش از حد بالاست؛ فشرده‌اش کنید و دوباره تلاش کنید',
+    'The current model does not support images; switch to a model that does': 'مدل فعلی تصویر پشتیبانی نمی‌کند؛ مدل دیگری برگزینید',
+    'Image failed to load; click to retry': 'بارگذاری تصویر نشد؛ برای تلاش دوباره کلیک کنید',
+    'Loading image…': 'در حال بارگذاری تصویر…',
+    'The file has not finished uploading; re-add it and try again': 'بارگذاری فایل تمام نشده؛ دوباره اضافه‌اش کنید و تلاش کنید',
+    'Files are still uploading; send after they finish': 'فایل‌ها هنوز در حال بارگذاری‌اند؛ پس از پایان بفرستید',
+    'Upload failed; click to retry': 'بارگذاری ناموفق بود؛ برای تلاش دوباره کلیک کنید',
+    'Session unavailable; files cannot be uploaded': 'گفت‌وگو در دسترس نیست؛ بارگذاری فایل ممکن نیست',
+
+    /* پرسش و پاسخ عامل */
+    'These pending questions remain answerable from the composer.': 'این پرسش‌های در انتظار همچنان از پیام‌نویس پاسخ‌پذیرند.',
+    'View answers': 'مشاهدهٔ پاسخ‌ها',
+    'This question set was cancelled before answers were submitted.': 'این مجموعه‌پرسش پیش از ثبت پاسخ‌ها لغو شد.',
+    'This question set was interrupted before answers were submitted.': 'این مجموعه‌پرسش پیش از ثبت پاسخ‌ها قطع شد.',
+    'This question is closed; its outcome is in the conversation below.': 'این پرسش بسته شده است؛ نتیجه‌اش در گفت‌وگوی پایین است.',
+    'Not answered': 'بی‌پاسخ',
+
+    /* کارها، هدف‌ها و یادآورها */
+    'Update to-do list': 'به‌روزرسانی فهرست کارها',
+    'Create goal': 'ساخت هدف',
+    'View goal': 'مشاهدهٔ هدف',
+    'Update goal': 'به‌روزرسانی هدف',
+    'Create reminder': 'ساخت یادآور',
+    'List reminders': 'فهرست یادآورها',
+    'Delete reminder': 'حذف یادآور',
+    'Update reminder': 'به‌روزرسانی یادآور',
+    'The to-do list is empty': 'فهرست کارها خالی است',
+    'Initial list': 'فهرست آغازین',
+    'Changes since the previous list': 'تغییرها نسبت به فهرست پیشین',
+    'Previous list unavailable': 'فهرست پیشین در دسترس نیست',
+    'No changes to the list': 'تغییری در فهرست نیست',
+    'Status changed': 'وضعیت تغییر کرد',
+    'No goal': 'بدون هدف',
+    'Awaiting continuation': 'در انتظار ادامه',
+    'Scheduled for': 'زمان‌بندی برای',
+    'Overdue, awaiting session resume': 'از موعد گذشته؛ در انتظار ازسرگیری گفت‌وگو',
+    'No reminders': 'یادآوری نیست',
+
+    /* ابزارها — عنوان‌های فراخوانی */
+    'Inspect providers': 'بازرسی تأمین‌کننده‌ها',
+    'Query runtime': 'پرس‌وجوی زمان اجرا',
+    'Inspect plugins': 'بازرسی افزونه‌ها',
+    'Run workflow': 'اجرای گردش کار',
+    'Run ralph loop': 'اجرای حلقهٔ رالف',
+    'Read event': 'خواندن رویداد',
+    'Search events': 'جست‌وجوی رویدادها',
+    'Trace event': 'ردیابی رویداد',
+    'Trace session': 'ردیابی گفت‌وگو',
+    'List models': 'فهرست مدل‌ها',
+    'Create subagent': 'ساخت زیرعامل',
+    'List subagents': 'فهرست زیرعامل‌ها',
+    'Interrupt agent': 'وقفهٔ عامل',
+    'Read job output': 'خواندن خروجی کار',
+    'Open terminal': 'باز کردن پایانه',
+    'Read terminal': 'خواندن پایانه',
+    'List terminals': 'فهرست پایانه‌ها',
+    'Signal terminal': 'ارسال سیگنال به پایانه',
+    'Close terminal': 'بستن پایانه',
+    'Query code symbols': 'پرس‌وجوی نمادهای کد',
+    'Find definition': 'یافتن تعریف',
+    'Find references': 'یافتن ارجاع‌ها',
+    'Find implementation': 'یافتن پیاده‌سازی',
+    'Inspect symbol': 'بازرسی نماد',
+    'Query Cordis environment': 'پرس‌وجوی محیط Cordis',
+    'Read image': 'خواندن تصویر',
+    'Create teammate': 'ساخت هم‌تیم',
+    'Create team task': 'ساخت کار تیمی',
+    'Read team task': 'خواندن کار تیمی',
+    'Update team task': 'به‌روزرسانی کار تیمی',
+    'List team tasks': 'فهرست کارهای تیمی',
+    'Wait for subagent': 'انتظار برای زیرعامل',
+    'Cancel background job': 'لغو کار پس‌زمینه',
+    'List background jobs': 'فهرست کارهای پس‌زمینه',
+    'Tool call': 'فراخوانی ابزار',
+    'Preparing tool call': 'آماده‌سازی فراخوانی ابزار',
+    'Command arguments': 'آرگومان‌های دستور',
+    'Record status': 'وضعیت ثبت',
+    'Collapse output': 'جمع کردن خروجی',
+    'Collapse diff': 'جمع کردن تفاوت‌ها',
+    'Collapse content': 'جمع کردن محتوا',
+    'Collapse results': 'جمع کردن نتایج',
+    'No output': 'بدون خروجی',
+    'No results': 'بدون نتیجه',
+    'No results found': 'نتیجه‌ای یافت نشد',
+    'Source list truncated': 'فهرست منابع بریده شد',
+    'Content truncated': 'محتوا بریده شد',
+    'Result limit reached; narrow the search for more': 'به سقف نتیجه رسیدید؛ برای بیشتر، جست‌وجو را محدودتر کنید',
+
+    /* جزئیات ابزار — فیلدها */
+    'Recorded result': 'نتیجهٔ ثبت‌شده',
+    'Agent response': 'پاسخ عامل',
+    'Available models': 'مدل‌های در دسترس',
+    'Output truncated': 'خروجی بریده شد',
+    'Workflow script': 'اسکریپت گردش کار',
+    'Round limit reached': 'به سقف دورها رسید',
+    'Remaining work': 'کار باقی‌مانده',
+    'Replaced by': 'جایگزین‌شده با',
+    'Replacement chain': 'زنجیرهٔ جایگزینی',
+    'Replaced events': 'رویدادهای جایگزین‌شده',
+    'Source events': 'رویدادهای مبدأ',
+    'Derived events': 'رویدادهای مشتق',
+    'Ancestor sessions': 'گفت‌وگوهای اجداد',
+    'Descendant sessions': 'گفت‌وگوهای نسل بعد',
+    'Surrounding events': 'رویدادهای پیرامونی',
+    'Subagent activity': 'فعالیت زیرعامل',
+    'No active subagents': 'زیرعامل فعالی نیست',
+    'Wait timed out': 'مهلت انتظار تمام شد',
+    'Change detected': 'تغییری شناسایی شد',
+    'Worker reported completion': 'کارگر انجام کار را گزارش کرد',
+    'Worker reported a blocker': 'کارگر یک مانع گزارش کرد',
+    'Interrupt requested': 'درخواست وقفه ثبت شد',
+    'Cancellation requested': 'درخواست لغو ثبت شد',
+    'Already finished': 'قبلاً تمام شده است',
+    'Signal delivered': 'سیگنال تحویل شد',
+    'Exit code': 'کد خروج',
+    'Process group': 'گروه فرایند',
+    'Event sequence': 'توالی رویداد',
+    'Call ID': 'شناسهٔ فراخوانی',
+    'Agent ID': 'شناسهٔ عامل',
+    'Job ID': 'شناسهٔ کار',
+    'Message ID': 'شناسهٔ پیام',
+    'Process ID': 'شناسهٔ فرایند',
+    'Best match': 'بهترین تطبیق',
+    'Target event': 'رویداد هدف',
+    'Write scopes': 'دامنه‌های نوشتن',
+    'Input schema': 'طرح ورودی',
+    'Output schema': 'طرح خروجی',
+    'Current package': 'بستهٔ فعلی',
+    'Next package': 'بستهٔ بعدی',
+    'Latest run': 'آخرین اجرا',
+
+    /* وضعیت‌ها و خطاها */
+    'Awaiting approval': 'در انتظار تأیید',
+    'Client ready to activate': 'سرویسگیرنده آمادهٔ فعال‌سازی',
+    'Run failed': 'اجرا ناموفق',
+    'Newer run available': 'اجرای تازه‌تری موجود است',
+    'A newer run card is available below': 'کارت اجرای تازه‌تر در پایین موجود است',
+    'This package no longer exists': 'این بسته دیگر وجود ندارد',
+    'Click again to confirm': 'برای تأیید، دوباره کلیک کنید',
+    'Confirm stop': 'توقف را تأیید کنید',
+    'Stop failed': 'توقف ناموفق بود',
+    'Command failed': 'دستور ناموفق بود',
+    'API key is invalid': 'کلید API نامعتبر است',
+    'Request quota exhausted.': 'سهمیهٔ درخواست تمام شد.',
+    'This turn failed': 'این نوبت ناموفق بود',
+    'Output token limit reached': 'به سقف توکن خروجی رسید',
+    'Task stopped': 'کار متوقف شد',
+    'Sign in to DeepSeek and ensure the request destination supports account authentication.': 'وارد DeepSeek شوید و مطمئن شوید مقصد درخواست از احراز هویت حساب پشتیبانی می‌کند.',
+    'Stopped because you signed out of DeepSeek.': 'به‌دلیل خروج از حساب DeepSeek متوقف شد.',
+    'The DSH process exited before this turn finished (for example, it was killed, crashed, or timed out while shutting down), so the turn was closed when DSH restarted. Unfinished tool calls have unknown outcomes.': 'فرایند ماه‌ای پیش از پایان این نوبت بسته شد (مثلاً کشتن اجباری، کرش یا اتمام مهلت هنگام خاموشی)؛ پس از راه‌اندازی دوباره، این نوبت نیمه‌کاره بسته شد. نتیجهٔ فراخوانی‌های ناتمام نامعلوم است.',
+    'Cache hit': 'اصابت کش',
+    'Uncached input': 'ورودی بی‌کش',
+    'Cached input': 'ورودی کش‌شده',
+    'Cache write': 'نوشتن کش',
+    'Provider / model': 'تأمین‌کننده / مدل',
+    'Auto review did not authorize this action': 'بازبینی خودکار این عمل را مجاز ندانست',
+    'Rejected by Auto review': 'ردشده توسط بازبینی خودکار',
+
+    /* افزونه‌ها و Cordis */
+    'Cordis plugins': 'افزونه‌های Cordis',
+    'Cordis Plugin': 'افزونهٔ Cordis',
+    'Run Cordis Plugin': 'اجرای افزونهٔ Cordis',
+    'Stop Cordis Plugin': 'توقف افزونهٔ Cordis',
+    'Remove Cordis Plugin': 'حذف افزونهٔ Cordis',
+    'Register Cordis Plugin': 'ثبت افزونهٔ Cordis',
+    'Update Cordis Plugin': 'به‌روزرسانی افزونهٔ Cordis',
+    'Preparing a Cordis tool call': 'آماده‌سازی فراخوانی ابزار Cordis',
+    'Cordis approvals': 'تأییدهای Cordis',
+    'No plugins defined yet': 'هنوز افزونه‌ای تعریف نشده است',
+    'This session': 'این گفت‌وگو',
+    'Other sessions': 'سایر گفت‌وگوها',
+    'Run controls live in the Cordis panel above Settings': 'کنترل‌های اجرا در پنل Cordis بالای تنظیمات است',
+    'Install, enable, and configure plugins': 'نصب، فعال‌سازی و پیکربندی افزونه‌ها',
+    'About plugins': 'دربارهٔ افزونه‌ها',
+    'Reading plugins…': 'در حال خواندن افزونه‌ها…',
+    'Could not read all plugins, possibly due to a network problem': 'خواندن همهٔ افزونه‌ها ممکن نشد؛ شاید به‌خاطر مشکل شبکه',
+    'Refresh failed. Please try again.': 'نوسازی ناموفق بود. دوباره تلاش کنید.',
+    'No plugins are installed yet.': 'هنوز افزونه‌ای نصب نشده است.',
+    'Choose how to add a plugin': 'روش افزودن افزونه را انتخاب کنید',
+    'Install a third-party plugin': 'نصب افزونهٔ بیرونی',
+    'Supports npm packages, Git repositories, and local directories': 'بسته‌های npm، مخازن Git و پوشه‌های محلی پشتیبانی می‌شوند',
+    'This profile applies changes only at startup.': 'این پروفایل تغییرها را فقط هنگام راه‌اندازی اعمال می‌کند.',
+    'The change reaches modules DSH itself loaded.': 'تغییر به ماژول‌هایی می‌رسد که ماه‌ای خودش بارگذاری کرده است.',
+    'The change reaches a plugin running outside the plugin list.': 'تغییر به افزونه‌ای می‌رسد که بیرون از فهرست افزونه‌ها اجرا می‌شود.',
+    'DSH could not compare the loaded plugins with their files.': 'مقایسهٔ افزونه‌های بارگذاری‌شده با فایل‌هایشان ممکن نشد.',
+    'Installed plugins': 'افزونه‌های نصب‌شده',
+    'Built-in plugin settings': 'تنظیمات افزونه‌های داخلی',
+    'Plugin views': 'نمای‌های افزونه',
+    'Code source': 'منبع کد',
+    'Built in': 'داخلی',
+    'Current version': 'نسخهٔ فعلی',
+    'This plugin pack contains no components.': 'این بستهٔ افزونه هیچ مؤلفه‌ای ندارد.',
+    'Filter components': 'پالایش مؤلفه‌ها',
+    'No component matches.': 'مؤلفهٔ منطبقی نیست.',
+    'Waiting for dependencies': 'در انتظار وابستگی‌ها',
+    'Back to plugins': 'بازگشت به افزونه‌ها',
+    'Enter the plugin’s package name, GitHub repository address, or local directory path.': 'نام بستهٔ افزونه، نشانی مخزن GitHub یا مسیر پوشهٔ محلی را وارد کنید.',
+    'Package name or address': 'نام بسته یا نشانی',
+    'Install guide and examples': 'راهنمای نصب و نمونه‌ها',
+    'Hide the guide': 'پنهان کردن راهنما',
+    'Example: ': 'نمونه: ',
+    'Replace this with the actual Git repository address.': 'به‌جای این، نشانی واقعی مخزن Git را بگذارید.',
+    'Replace this with the actual path to your local plugin directory.': 'به‌جای این، مسیر واقعی پوشهٔ افزونهٔ محلی‌تان را بگذارید.',
+    'Use example': 'استفاده از نمونه',
+    'Defining the plugin': 'در حال تعریف افزونه',
+    'Definition failed': 'تعریف ناموفق بود',
+    'Definition interrupted': 'تعریف قطع شد',
+    'Plugin source': 'منبع افزونه',
+    'Allow this version only': 'فقط همین نسخه مجاز باشد',
+    'Allow future versions of this plugin': 'نسخه‌های آیندهٔ این افزونه مجاز باشند',
+    'Roll back': 'بازگردانی نسخهٔ قبل',
+    'Experimental plugins': 'افزونه‌های آزمایشی',
+    'Add plugin': 'افزودن افزونه',
+    'No such plugin was found': 'چنین افزونه‌ای یافت نشد',
+    'Not installed': 'نصب نشده',
+    'Rendering failed in the panel; the default UI was restored': 'رندر در پنل ناموفق بود؛ رابط پیش‌فرض بازگردانده شد',
+    'Failed to load plugins': 'خطا در بارگذاری افزونه‌ها',
+
+    /* ابزارها و افزونه‌ها — عمومی */
     'Enter a valid package name or address.': 'نام بسته یا نشانی معتبر وارد کنید.',
     'Enter the plugin’s npm package name': 'نام بستهٔ npm افزونه را وارد کنید',
     'What it provides goes away once it is uninstalled.': 'آنچه فراهم می‌کند پس از حذف نصب، از بین می‌رود.',
@@ -320,9 +616,7 @@
     'Export session log': 'خروجی گرفتن از گزارش گفت‌وگو',
     'Export session log as ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
 
-    /* رشته‌های «دقیق» منوی «+» — استخراج‌شده از سورس dsh
-       (packages/client/ui-commands/src/client/locales.ts + کاتالوگ موتور) */
-    'Compact': 'فشرده‌سازی',
+    /* رشته‌های «دقیق» منوی «+» — استخراج‌شده از سورس dsh */
     'Set or view the goal for a long-running task': 'تنظیم یا مشاهدهٔ هدفِ کار بلندمدت',
     'Record feedback about this session': 'ثبت بازخورد دربارهٔ این گفت‌وگو',
     'Compact older conversation history': 'فشرده‌سازی تاریخچهٔ پیشین گفت‌وگو',
@@ -337,7 +631,6 @@
     /* صفحهٔ بوت (پیش از رندر React) */
     'HARNESS': 'ماه‌ای',
     'DEEPSEEK': 'ماه‌ای',
-    'Failed to load plugins': 'خطا در بارگذاری افزونه‌ها',
 
     /* اعلان پیش‌نمایش */
     'Preview Notice': 'اطلاعیهٔ پیش‌نمایش',
@@ -353,7 +646,26 @@
     'Standard mode': 'حالت استاندارد',
     'Add files or run commands': 'افزودن فایل یا اجرای دستورات',
 
-    /* --- منوی انتخاب حالت عامل (ui-agent-preset) — EN + ZH دقیق از سورس dsh --- */
+    /* پنل‌های ران‌تایم که از سرور محلی می‌آیند (در بسته‌های استاتیک نیستند) */
+    'New Terminal': 'پایانهٔ جدید',
+    'Work': 'کار',
+    '+ New Session': 'گفت‌وگوی جدید',
+    '＋ New Session': 'گفت‌وگوی جدید',
+    '+ New session': 'گفت‌وگوی جدید',
+    'Message or run a task, / commands, @ files or sessions': 'پیام بنویسید یا کار بدهید؛ /دستورها، @فایل‌ها یا گفت‌وگوها',
+    'Describe what you want to build, / commands, @ files or sessions': 'بگویید چه می‌خواهید بسازید؛ /دستورها، @فایل‌ها یا گفت‌وگوها',
+    'List of Images': 'فهرست ایمیج‌ها',
+    'List of Volumes': 'فهرست والیوم‌ها',
+    'List of Valiums': 'فهرست والیوم‌ها',
+    'Remove Image': 'حذف ایمیج',
+    'Container Removal': 'حذف کانتینر',
+    'Entry to the running container': 'ورود به کانتینر در حال اجرا',
+    'Cleansing useless things': 'پاک‌سازی موارد بی‌استفاده',
+    'Follow the Live Logs': 'دنبال‌کردن لاگ‌های زنده',
+    'New Terminal Run orders in the working space…': 'پایانهٔ جدید — اجرای دستورها در فضای کاری…',
+    'Workspace files of this conversation': 'فایل‌های فضای کاری این گفت‌وگو',
+
+    /* --- منوی انتخاب حالت عامل (ui-agent-preset) --- */
     'PTC mode': 'حالت PTC',
     'Minimal mode': 'حالت مینیمال',
     'Creator mode': 'حالت خلاق',
@@ -361,12 +673,10 @@
     'Includes all Standard mode capabilities. Better suited to tasks that call tools in batches and then filter, organize, deduplicate, count, or summarize the results.': 'همهٔ توانایی‌های حالت استاندارد را دارد؛ مناسب‌تر برای کارهایی که ابزارها را دسته‌ای فراخوانی می‌کنند و سپس نتایج را پالایش، سامان‌دهی، حذف تکرار، شمارش یا خلاصه می‌کنند.',
     'The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance.': 'عامل از پایانه و خواندن تصویر استفاده می‌کند و فشرده‌سازی زمینه هم دارد؛ برای آزمایش و مقایسهٔ کارایی پایه مفید است.',
     'Customize DSH through conversation. Let the agent write plugins that add features or UI, or combine tools and prompts to create your own mode.': 'شخصی‌سازی ماه‌ای از راه گفت‌وگو؛ بگذارید عامل افزونه بنویسد تا قابلیت یا رابط تازه بیفزاید، یا ابزارها و پرسش‌ها را ترکیب کند تا حالت خودتان را بسازید.',
-    /* نسخهٔ ترکیبی آیتم منو (اگر نام و توضیح در یک گره متنی باشند) */
     'Standard mode Work with code, files, and information. Suitable for most tasks, with search, editing, terminal commands, and other tools available as needed.': 'حالت استاندارد — کار با کد، فایل‌ها و اطلاعات؛ مناسب بیشتر کارها. جست‌وجو، ویرایش، دستورهای پایانه و ابزارهای دیگر در صورت نیاز در دسترس‌اند.',
     'PTC mode Includes all Standard mode capabilities. Better suited to tasks that call tools in batches and then filter, organize, deduplicate, count, or summarize the results.': 'حالت PTC — همهٔ توانایی‌های حالت استاندارد را دارد؛ مناسب‌تر برای کارهایی که ابزارها را دسته‌ای فراخوانی می‌کنند و سپس نتایج را پالایش، سامان‌دهی، حذف تکرار، شمارش یا خلاصه می‌کنند.',
     'Minimal mode The agent uses a terminal and image reading, with context compaction. Useful for testing and comparing its basic performance.': 'حالت مینیمال — عامل از پایانه و خواندن تصویر استفاده می‌کند و فشرده‌سازی زمینه هم دارد؛ برای آزمایش و مقایسهٔ کارایی پایه مفید است.',
     'Creator mode Customize DSH through conversation. Let the agent write plugins that add features or UI, or combine tools and prompts to create your own mode.': 'حالت خلاق — شخصی‌سازی ماه‌ای از راه گفت‌وگو؛ بگذارید عامل افزونه بنویسد تا قابلیت یا رابط تازه بیفزاید، یا ابزارها و پرسش‌ها را ترکیب کند تا حالت خودتان را بسازید.',
-    /* پنل راهنمای حالت‌ها */
     'Mode details': 'جزئیات حالت',
     'How to use': 'روش استفاده',
     'Guide sections': 'بخش‌های راهنما',
@@ -377,7 +687,6 @@
     'Choose PTC mode when starting a new task. Specify the input files, processing rules, and output format. The agent writes the code.': 'برای آغاز کار جدید حالت PTC را برگزینید. فایل‌های ورودی، قواعد پردازش و قالب خروجی را مشخص کنید؛ نوشتن کد با عامل است.',
     'Choose Minimal mode for a new task. For a comparison, hold the model, permissions, input, and starting workspace state constant across runs.': 'برای کار جدید حالت مینیمال را برگزینید. برای مقایسه، مدل، مجوزها، ورودی و وضعیت آغازین فضای کاری را در همهٔ اجراها ثابت نگه دارید.',
     'Choose Creator mode for a new task. Describe the capability you want, where it should appear, and how you will verify it.': 'برای کار جدید حالت خلاق را برگزینید. قابلیت موردنظر، محل نمایش و روش تأیید آن را شرح دهید.',
-    /* بخش مدیریت حالت‌ها */
     'Agent presets': 'حالت‌های عامل',
     'Choose the agent preset for your new task': 'حالت عامل را برای کار جدیدتان انتخاب کنید',
     'The agent preset chosen when this task started': 'حالت عاملِ انتخاب‌شده هنگام آغاز این کار',
@@ -396,7 +705,7 @@
     'Checking whether Creator mode is available': 'بررسی در دسترس بودن حالت خلاق',
     'Temporarily unavailable. Reopen this menu to retry': 'موقتاً در دسترس نیست؛ برای تلاش دوباره این منو را دوباره باز کنید',
     'Creator mode is not included in this configuration': 'این پیکربندی حالت خلاق ندارد',
-    /* حالت‌های مجوز (دکمهٔ حالت دسترسی در صفحهٔ آغازین) */
+    /* حالت‌های مجوز */
     'Read Only': 'فقط خواندنی',
     'Workspace Write': 'نوشتن در فضای کاری',
     'Full access': 'دسترسی کامل',
@@ -409,7 +718,7 @@
     'Enable Auto review (experimental)?': 'بازبینی خودکار (آزمایشی) فعال شود؟',
     'I understand these risks and want to continue': 'این ریسک‌ها را می‌دانم و می‌خواهم ادامه دهم',
     'Enable Auto review': 'فعال‌سازی بازبینی خودکار',
-    /* نسخه‌های چینی رشته‌های بالا (موتور گاهی زبان پیش‌فرض چینی می‌فرستد) */
+    /* نسخه‌های چینی رشته‌های بالا */
     '标准模式': 'حالت استاندارد',
     'PTC 模式': 'حالت PTC',
     '极简模式': 'حالت مینیمال',
@@ -442,11 +751,13 @@
     '正在确认创造模式是否可用': 'بررسی در دسترس بودن حالت خلاق',
     '暂时不可用，请重新打开菜单重试': 'موقتاً در دسترس نیست؛ برای تلاش دوباره این منو را دوباره باز کنید',
     '当前配置未提供创造模式': 'این پیکربندی حالت خلاق ندارد',
+    '当前包': 'بستهٔ فعلی',
+    '下一个包': 'بستهٔ بعدی',
 
     /* متن دیالوگ شروع */
     'Sign in to your DeepSeek account or add an API Key to get started. Your projects and files are stored locally.': 'برای شروع، به حساب DeepSeek خود وارد شوید یا کلید API اضافه کنید. پروژه‌ها و فایل‌های شما به‌صورت محلی ذخیره می‌شوند.',
 
-    /* --- رشته‌های پویا از موتور (صفحهٔ آغازین، ورودی هدف، دکمه‌ها) --- */
+    /* --- رشته‌های پویا از موتور --- */
     '/goal describe the objective for a long-running task': '/goal هدفِ کارِ بلندمدت را شرح دهید',
     'describe the objective for a long-running task': 'هدفِ کارِ بلندمدت را شرح دهید',
     'Describe the objective for a long-running task': 'هدفِ کارِ بلندمدت را شرح دهید',
@@ -491,8 +802,7 @@
     '删除': 'حذف',
     '重命名': 'تغییر نام',
     '开始': 'شروع',
-
-    /* رشته‌های چینی منوی «+» و گفت‌وگوی جدید */
+    /* چینی — منوی «+» و گفت‌وگوی جدید */
     '工作区文件': 'فایل‌های فضای کاری',
     '新建聊天': 'گفت‌وگوی جدید',
     '新聊天': 'گفت‌وگوی جدید',
@@ -510,7 +820,6 @@
     '截图': 'نماگرفت',
     '导出会话日志为 ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
     '导出会话日志为ZIP': 'خروجی گرفتن از گزارش گفت‌وگو به‌صورت ZIP',
-    /* رشته‌های چینی کاتالوگ موتور برای ردیف‌های file/model/history و بخش command */
     '压缩': 'فشرده‌سازی',
     '将当前会话内容导出为 ZIP': 'خروجی گرفتن از محتوای گفت‌وگو به‌صورت ZIP',
     '设置或查看长期任务目标': 'تنظیم یا مشاهدهٔ هدف کار بلندمدت',
@@ -527,6 +836,129 @@
     '切换模型': 'تغییر مدل',
     '查看历史会话': 'مشاهدهٔ گفت‌وگوهای پیشین',
     '浏览历史会话': 'مرور گفت‌وگوهای پیشین',
+    /* چینی — جدول i18n ماژول گفت‌وگو */
+    'Cordis 插件': 'افزونه‌های Cordis',
+    'Cordis 审批': 'تأییدهای Cordis',
+    'Client 待激活': 'سرویسگیرنده در انتظار فعال‌سازی',
+    'Session ID 已复制': 'شناسهٔ گفت‌وگو کپی شد',
+    'Cmd/Ctrl+Enter 插话发送全部排队消息': '‏Cmd/Ctrl+Enter همهٔ پیام‌های صف‌شده را هدایت می‌کند',
+    'Token 用量': 'مصرف توکن',
+    'DeepSeek 账号': 'حساب DeepSeek',
+    'Git 仓库': 'مخزن Git',
+    'Host 报告了一个错误': 'میزبان خطایی گزارش کرد',
+    'Auto review 已拒绝': 'بازبینی خودکار رد کرد',
+    'Auto review 未授权此次操作': 'بازبینی خودکار این عمل را مجاز ندانست',
+    '已完成': 'انجام شد',
+    '指令失败': 'دستور ناموفق بود',
+    '执行中…': 'در حال اجرا…',
+    '指令': 'دستور',
+    '加载图片…': 'در حال بارگذاری تصویر…',
+    '查看大图': 'مشاهدهٔ تصویر کامل',
+    '关闭图片预览': 'بستن پیش‌نمایش تصویر',
+    '图片预览': 'پیش‌نمایش تصویر',
+    '图片无法预览': 'پیش‌نمایش تصویر ممکن نیست',
+    '在新对话中分支': 'انشعاب به گفت‌وگوی تازه',
+    '仅可从已完成轮次的最后一条消息分支': 'انشعاب فقط از آخرین پیام یک نوبت کامل‌شده ممکن است',
+    '上下文已压缩': 'زمینه فشرده شد',
+    '点击查看压缩摘要': 'برای مشاهدهٔ خلاصهٔ فشرده‌سازی کلیک کنید',
+    '正在压缩…': 'در حال فشرده‌سازی…',
+    '压缩摘要不可用': 'خلاصهٔ فشرده‌سازی در دسترس نیست',
+    '替换目录': 'فهرست جایگزینی',
+    '已新增': 'افزوده شد',
+    '已载入': 'بارگذاری شد',
+    '已移除': 'حذف شد',
+    '已更新': 'به‌روزرسانی شد',
+    '已截断': 'بریده شد',
+    '取代先前的快照': 'جایگزین عکس‌های پیشین است',
+    '上下文注入': 'تزریق زمینه',
+    '跨会话召回': 'یادآوری بین‌گفت‌وگو',
+    '附加内容块': 'بلوک محتوای اضافی',
+    '请先登录 DeepSeek，并确认请求地址支持账号认证。': 'نخست وارد DeepSeek شوید و مطمئن شوید مقصد درخواست از احراز هویت حساب پشتیبانی می‌کند.',
+    '任务已因退出 DeepSeek 登录而停止。': 'کار به‌دلیل خروج از حساب DeepSeek متوقف شد.',
+    'API 密钥无效': 'کلید API نامعتبر است',
+    'DSH 进程在本轮完成前退出（例如被强制结束、崩溃或关闭超时），重新启动后本轮已中止。未完成的工具调用结果未知。': 'فرایند ماه‌ای پیش از پایان این نوبت بسته شد (مثلاً کشتن اجباری، کرش یا اتمام مهلت هنگام خاموشی)؛ پس از راه‌اندازی دوباره این نوبت نیمه‌کاره بسته شد. نتیجهٔ فراخوانی‌های ناتمام نامعلوم است.',
+    '当前请求的额度已用尽': 'سهمیهٔ درخواست فعلی تمام شد',
+    '已达到输出 token 上限': 'به سقف توکن خروجی رسید',
+    '回答被截断，已有输出保留在对话中。发送“继续”可让模型接着输出。': 'پاسخ بریده شد؛ خروجی فعلی در گفت‌وگو مانده است. «ادامه» را بفرستید تا مدل ادامه دهد.',
+    '正在重试模型请求': 'در حال تلاش دوباره برای درخواست مدل',
+    '模型请求重试已取消': 'تلاش دوبارهٔ درخواست مدل لغو شد',
+    '重试延迟：': 'تأخیر تلاش دوباره: ',
+    '失败原因：': 'علت خطا: ',
+    '等待重试模型请求': 'در انتظار تلاش دوبارهٔ درخواست مدل',
+    '已重试模型请求': 'درخواست مدل دوباره اجرا شد',
+    '正在运行代码': 'در حال اجرای کد',
+    '正在运行命令': 'در حال اجرای دستورات',
+    '运行了代码': 'کد اجرا شد',
+    '执行了命令': 'دستورات اجرا شد',
+    '修改了文件': 'فایل‌ها ویرایش شد',
+    '更新了计划': 'برنامه به‌روزرسانی شد',
+    '向用户提出了问题': 'از کاربر پرسش شد',
+    '已读取文件': 'فایل‌ها خوانده شد',
+    '已读取图片': 'تصاویر خوانده شد',
+    '已搜索代码': 'کد جست‌وجو شد',
+    '已协调子智能体': 'زیرعامل‌ها هماهنگ شدند',
+    '已完成分析': 'تحلیل انجام شد',
+    '已调用工具': 'ابزارها فراخوانی شد',
+    '已访问网页': 'صفحات وب بازدید شد',
+    '已搜索网页': 'وب جست‌وجو شد',
+    '已写入文件': 'فایل‌ها نوشته شد',
+    '正在编辑文件': 'در حال ویرایش فایل‌ها',
+    '正在更新计划': 'در حال به‌روزرسانی برنامه',
+    '准备运行代码': 'آماده‌سازی اجرای کد',
+    '准备运行命令': 'آماده‌سازی اجرای دستورات',
+    '准备编辑文件': 'آماده‌سازی ویرایش فایل‌ها',
+    '准备更新计划': 'آماده‌سازی به‌روزرسانی برنامه',
+    '准备提问': 'آماده‌سازی پرسش‌ها',
+    '准备读取文件': 'آماده‌سازی خواندن فایل‌ها',
+    '准备读取图片': 'آماده‌سازی خواندن تصاویر',
+    '准备搜索代码': 'آماده‌سازی جست‌وجوی کد',
+    '准备协调子智能体': 'آماده‌سازی هماهنگی زیرعامل‌ها',
+    '准备调用工具': 'آماده‌سازی فراخوانی ابزارها',
+    '准备访问网页': 'آماده‌سازی بازدید صفحات وب',
+    '准备搜索网页': 'آماده‌سازی جست‌وجوی وب',
+    '准备写入文件': 'آماده‌سازی نوشتن فایل‌ها',
+    '等待你的操作': 'در انتظار اقدام شما',
+    '正在读取文件': 'در حال خواندن فایل‌ها',
+    '正在读取图片': 'در حال خواندن تصاویر',
+    '正在搜索代码': 'در حال جست‌وجوی کد',
+    '正在协调子智能体': 'در حال هماهنگی زیرعامل‌ها',
+    '正在分析请求': 'در حال تحلیل درخواست',
+    '正在调用工具': 'در حال فراخوانی ابزارها',
+    '正在访问网页': 'در حال بازدید صفحات وب',
+    '正在搜索网页': 'در حال جست‌وجوی وب',
+    '正在写入文件': 'در حال نوشتن فایل‌ها',
+    '本轮运行失败': 'این نوبت ناموفق بود',
+    '处理失败': 'پردازش ناموفق',
+    '本轮用量': 'مصرف نوبت',
+    '缓存命中': 'اصابت کش',
+    '缓存读取': 'خواندن کش',
+    '缓存写入': 'نوشتن کش',
+    '未缓存输入': 'ورودی بی‌کش',
+    '输出': 'خروجی',
+    '提供方 / 模型': 'تأمین‌کننده / مدل',
+    '未知内容块': 'بلوک محتوای ناشناخته',
+    '会话统计': 'آمار گفت‌وگو',
+    '输出速度（TPS）': 'سرعت خروجی (TPS)',
+    '工具调用用时': 'زمان ابزارها',
+    '首 token 平均（TTFT）': 'میانگین تا نخستین توکن (TTFT)',
+    '系统提示词': 'پیام سیستمی',
+    '系统提示词更新': 'به‌روزرسانی پیام سیستمی',
+    '任务已停止': 'کار متوقف شد',
+    '思考': 'اندیشیدن',
+    '已思考': 'اندکی اندیشید',
+    '工具已更新': 'ابزارها به‌روزرسانی شد',
+    '收到任务消息': 'پیام کار دریافت شد',
+    '这条通知触发了本轮回复。': 'این اعلان این پاسخ را فعال کرد.',
+    '收到 GitHub 事件': 'رویداد GitHub دریافت شد',
+    '继续执行目标': 'ادامهٔ هدف',
+    '后台任务状态更新': 'وضعیت کار پس‌زمینه به‌روزرسانی شد',
+    '插件状态更新': 'وضعیت افزونه به‌روزرسانی شد',
+    '收到执行请求': 'درخواست اجرا دریافت شد',
+    '自动化任务': 'کار خودکار',
+    '收到团队消息': 'پیام تیم دریافت شد',
+    '收到外部事件': 'رویداد بیرونی دریافت شد',
+    '子任务状态更新': 'وضعیت زیرکار به‌روزرسانی شد',
+    '、': '، ',
 
     /* --- پنل ابزارهای فضای کاری و نوار وضعیت --- */
     'Workspace files': 'فایل‌های فضای کاری',
@@ -537,11 +969,17 @@
     'More tools': 'ابزارهای بیشتر',
     'commands, @ files or sessions': 'دستورها، @فایل‌ها یا گفت‌وگوها',
     '… commands, @ files or sessions': '… دستورها، @فایل‌ها یا گفت‌وگوها',
-    'Completed': 'انجام شد',
     '…tok/s': '…توکن/ث'
   };
 
   /* ---------- ۳) قواعد الگویی (برای رشته‌های پویا) ---------- */
+  /* ارقام فارسی برای خروجی الگوها — ترتیب bidi در متن فارسی را هم درست می‌کند */
+  var FA_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  function faNum(s) {
+    return String(s)
+      .replace(/[0-9]/g, function (d) { return FA_DIGITS[+d]; })
+      .replace(/([۰-۹])\.([۰-۹])/g, '$1\u066B$2'); /* ممیز اعشار فارسی */
+  }
   var R = [
     [/^Preparing to (.+)$/u, function (m) {
       var map = {
@@ -563,13 +1001,12 @@
     }],
     /* «Completed in 12s» گاهی به چند گرهٔ جدا می‌شکند — تکه‌ها را هم پوشش بده */
     [/^Completed in$/u, function () { return 'انجام شد در'; }],
-    [/^in (\d+(?:[.,]\d+)?[hms]?)$/u, function (m) { return 'در ' + m[1]; }],
-    [/^(\d+(?:[.,]\d+)?)s$/u, function (m) { return m[1] + ' ثانیه'; }],
-    [/^(\d+(?:[.,]\d+)?)m$/u, function (m) { return m[1] + ' دقیقه'; }],
+    [/^in (\d+(?:[.,]\d+)?)ms$/u, function (m) { return 'در ' + faNum(m[1]) + ' میلی‌ثانیه'; }],
+    [/^(\d+(?:[.,]\d+)?)s$/u, function (m) { return faNum(m[1]) + ' ثانیه'; }],
+    [/^(\d+(?:[.,]\d+)?)m$/u, function (m) { return faNum(m[1]) + ' دقیقه'; }],
     [/^tok\/s$/u, function () { return 'توکن/ث'; }],
 
-    /* واژه‌های کوتاه منو — تطبیق بدون توجه به بزرگ/کوچکی نویسه‌ها و فاصلهٔ اضافه؛
-       فقط وقتی «کل» گرهِ متنی همین یک واژه باشد اجرا می‌شود (تطبیق لنگرشده). */
+    /* واژه‌های کوتاه منو — تطبیق لنگرشدهٔ کل گره */
     [/^\s*(add|file|goal|plan|feedback|commands?|history|permissions?|compact|export|model|insert|image|screenshot)\s*$/iu, function (m) {
       var w = m[1].toLowerCase();
       if (w === 'commands') return 'دستورها';
@@ -583,11 +1020,100 @@
       return map[w] || null;
     }],
 
-    /* نوار وضعیت: «1 tok/s» و «1%» به‌صورت یک گره واحد */
+    /* نوار وضعیت و رشته‌های ترکیبی */
     [/^Could not switch to (.+): (.+)$/u, function (m) { return 'جابه‌جایی به «' + m[1] + '» انجام نشد: ' + m[2]; }],
     [/^Access mode, current: (.+)$/u, function (m) { return 'حالت دسترسی، فعلی: ' + m[1]; }],
-    [/^\s*(\d+(?:[.,]\d+)?)\s*tok\/s\s*$/u, function (m) { return m[1] + ' توکن/ث'; }],
-    [/^\s*(\d+(?:[.,]\d+)?)\s*%\s*$/u, function (m) { return m[1] + '٪'; }]
+    [/^\s*(\d+(?:[.,]\d+)?)\s*tok\/s\s*$/u, function (m) { return faNum(m[1]) + ' توکن/ث'; }],
+    [/^\s*(\d+(?:[.,]\d+)?)\s*%\s*$/u, function (m) { return faNum(m[1]) + '٪'; }],
+    /* نوار وضعیت: «3 turns 12 steps» / «1 turn 0 steps» — با ارقام فارسی تا ترتیب bidi نشکند */
+    [/^(\d+)\s+turns?\s+(\d+)\s+steps?$/iu, function (m) { return faNum(m[1]) + ' نوبت · ' + faNum(m[2]) + ' گام'; }],
+    [/^(\d+)\s+turns?$/iu, function (m) { return faNum(m[1]) + ' نوبت'; }],
+    [/^(\d+)\s+turns?\s+(performed|pending|planned)$/iu, function (m) {
+      var w = { performed: 'انجام‌شده', pending: 'در انتظار', planned: 'برنامه‌ریزی‌شده' }[m[2].toLowerCase()];
+      return faNum(m[1]) + ' نوبت ' + w;
+    }],
+    [/^(\d+)\s+steps?$/iu, function (m) { return faNum(m[1]) + ' گام'; }],
+    [/^Cache hit (\d+(?:[.,]\d+)?)%$/iu, function (m) { return 'اصابت کش ' + faNum(m[1]) + '٪'; }],
+    [/^Cache hit (\d+(?:[.,]\d+)?)٪$/u, function (m) { return 'اصابت کش ' + faNum(m[1]) + '٪'; }],
+    [/^Retry delay:\s*(.*)$/u, function (m) { return 'تأخیر تلاش دوباره: ' + m[1]; }],
+    [/^Failure reason:\s*(.*)$/u, function (m) { return 'علت خطا: ' + m[1]; }],
+    [/^Tool added: (.+)$/u, function (m) { return 'ابزار افزوده شد: ' + m[1]; }],
+    [/^Tool removed: (.+)$/u, function (m) { return 'ابزار حذف شد: ' + m[1]; }],
+    [/^Tool was not executed\. Reason: (.+)$/u, function (m) { return 'ابزار اجرا نشد. دلیل: ' + m[1]; }],
+    [/^Unknown surface event: (.+)$/u, function (m) { return 'رویداد surface ناشناخته: ' + m[1]; }],
+
+    /* عنوان پنل‌ها و محتوای ران‌تایم (اسکرین‌شات کاربر) */
+    [/^Explanation about (.+)$/u, function (m) { return 'توضیح دربارهٔ ' + m[1]; }],
+    [/^Explanation abo…?$/u, function () { return 'توضیح دربارهٔ…'; }],
+    [/^orders in the working space[.…]?$/iu, function () { return 'اجرای دستورها در فضای کاری…'; }],
+    [/^workspace files of this conversation[.…]?$/iu, function () { return 'فایل‌های فضای کاری این گفت‌وگو…'; }],
+    [/^Browse workspace files of this conversation[.…]?$/iu, function () { return 'مرور فایل‌های فضای کاری این گفت‌وگو…'; }],
+
+    /* گفت‌وگوها و لیست‌ها */
+    [/^Show (\d+) more sessions$/u, function (m) { return 'نمایش ' + faNum(m[1]) + ' گفت‌وگوی بیشتر'; }],
+    [/^Jump to turn (\d+)$/u, function (m) { return 'پرش به نوبت ' + faNum(m[1]); }],
+    [/^Load and jump to turn (\d+)$/u, function (m) { return 'بارگذاری و پرش به نوبت ' + faNum(m[1]); }],
+    [/^Expand (\d+) more diff lines$/u, function (m) { return 'نمایش ' + faNum(m[1]) + ' خط تفاوت بیشتر'; }],
+    [/^Expand (\d+) more result lines$/u, function (m) { return 'نمایش ' + faNum(m[1]) + ' خط نتیجهٔ بیشتر'; }],
+    [/^Expand (\d+) more lines$/u, function (m) { return 'نمایش ' + faNum(m[1]) + ' خط بیشتر'; }],
+    [/^Expand (\d+) collapsed output lines$/u, function (m) { return 'باز کردن ' + faNum(m[1]) + ' خط خروجی جمع‌شده'; }],
+    [/^Show (\d+) more lines$/u, function (m) { return 'نمایش ' + faNum(m[1]) + ' خط بیشتر'; }],
+    [/^Command line (\d+)$/u, function (m) { return 'خط فرمان ' + faNum(m[1]); }],
+    [/^Hide live output of (.+)$/u, function (m) { return 'پنهان کردن خروجی زندهٔ ' + m[1]; }],
+    [/^Show live output of (.+)$/u, function (m) { return 'نمایش خروجی زندهٔ ' + m[1]; }],
+    [/^New session in (.+)$/u, function (m) { return 'گفت‌وگوی جدید در ' + m[1]; }],
+    [/^Session actions for (.+)$/u, function (m) { return 'کنش‌های گفت‌وگو برای ' + m[1]; }],
+    [/^Workspace actions for (.+)$/u, function (m) { return 'کنش‌های فضای کاری برای ' + m[1]; }],
+    [/^Stop task (.+)$/u, function (m) { return 'توقف کار ' + m[1]; }],
+    [/^Remove file (.+)$/u, function (m) { return 'حذف فایل ' + m[1]; }],
+    [/^Remove image (.+)$/u, function (m) { return 'حذف تصویر ' + m[1]; }],
+    [/^Retry uploading (.+)$/u, function (m) { return 'تلاش دوباره برای بارگذاری ' + m[1]; }],
+    [/^Queued file (.+)$/u, function (m) { return 'فایل صف‌شده ' + m[1]; }],
+    [/^A workspace named “(.+)” already exists\.$/u, function (m) { return 'فضای کاری با نام «' + m[1] + '» از قبل وجود دارد.'; }],
+    [/^This removes “(.+)” from the workspace list\. The folder and session logs will be kept\. Its sessions will appear under Ungrouped\.$/u, function (m) {
+      return '«' + m[1] + '» از فهرست فضاهای کاری حذف می‌شود. پوشه و گزارش گفت‌وگوها نگه داشته می‌شود و گفت‌وگوهایش زیر «گروه‌بندی‌نشده» می‌روند.';
+    }],
+    [/^Model operation failed: (.+)$/u, function (m) { return 'عملیات مدل ناموفق بود: ' + m[1]; }],
+    [/^Failed to load history: (.+)$/u, function (m) { return 'بارگذاری تاریخچه ناموفق بود: ' + m[1]; }],
+    [/^Catalog failed to load: (.+)$/u, function (m) { return 'بارگذاری کاتالوگ ناموفق بود: ' + m[1]; }],
+    [/^Reading the plugin inventory failed: (.+)$/u, function (m) { return 'خواندن فهرست افزونه‌ها ناموفق بود: ' + m[1]; }],
+    [/^New session failed: (.+)$/u, function (m) { return 'گفت‌وگوی جدید ناموفق بود: ' + m[1]; }],
+    [/^Loading failed: (.+)$/u, function (m) { return 'بارگذاری ناموفق بود: ' + m[1]; }],
+
+    /* پیوست و تصویر — الگوها */
+    [/^Image limit: up to (\d+) images, ([^ ]+) each$/iu, function (m) { return 'محدودیت تصویر: حداکثر ' + faNum(m[1]) + ' تصویر، هرکدام ' + m[2]; }],
+    [/^Each image must be smaller than (.+)$/u, function (m) { return 'هر تصویر باید کوچک‌تر از ' + m[1] + ' باشد'; }],
+    [/^Image sides must be at most (.+)px; downscale it and try again$/iu, function (m) { return 'اضلاع تصویر حداکثر ' + m[1] + ' پیکسل؛ کوچک‌ترش کنید و دوباره تلاش کنید'; }],
+    [/^A message can include up to (\d+) images$/iu, function (m) { return 'هر پیام حداکثر ' + faNum(m[1]) + ' تصویر می‌پذیرد'; }],
+    [/^Images exceed (.+) in total; remove some and try again$/iu, function (m) { return 'مجموع تصاویر از ' + m[1] + ' بیشتر است؛ چند مورد را حذف کنید'; }],
+    [/^Sending images failed \((.+)\); re-add them and try again$/iu, function (m) { return 'ارسال تصاویر ناموفق بود (' + m[1] + ')؛ دوباره اضافه کنید'; }],
+
+    /* زمان‌بندی و یادآورها */
+    [/^Every day at (.+)$/u, function (m) { return 'هر روز ساعت ' + m[1]; }],
+    [/^Weekly on (.+)$/u, function (m) { return 'هفتگی: ' + m[1]; }],
+    [/^Running for (.+)$/u, function (m) { return 'در حال اجرا: ' + m[1]; }],
+    [/^Deep diving for (.+) ···$/u, function (m) { return 'بررسی عمیق از ' + m[1] + ' ···'; }],
+    [/^Showing the first (\d+) results\. Narrow your search\.$/u, function (m) { return faNum(m[1]) + ' نتیجهٔ اول نشان داده می‌شود. جست‌وجو را محدودتر کنید.'; }],
+
+    /* فشرده‌سازی و ارجاع */
+    [/^Compacted (\d+) history items \(~([^)]+) tokens\)$/u, function (m) { return faNum(m[1]) + ' آیتم تاریخچه فشرده شد (حدود ' + faNum(m[2]) + ' توکن)'; }],
+    [/^Referenced session · (.+)$/u, function (m) { return 'گفت‌وگوی مرجع · ' + m[1]; }],
+    [/^From session (.+)$/u, function (m) { return 'از گفت‌وگو: ' + m[1]; }],
+    [/^(\d+) tok$/u, function (m) { return faNum(m[1]) + ' توکن'; }],
+    [/^用量 (\d+)$/, function (m) { return 'مصرف: ' + m[1]; }],
+    [/^(\d+) 条消息$/, function (m) { return m[1] + ' پیام'; }],
+    [/^(\d+) 个 subagent$/, function (m) { return m[1] + ' زیرعامل'; }],
+    [/^(\d+) 次工具调用$/, function (m) { return m[1] + ' فراخوانی ابزار'; }],
+    [/^(\d+) 轮 (\d+) 步$/, function (m) { return m[1] + ' نوبت · ' + m[2] + ' گام'; }],
+    [/^缓存命中 (\d+(?:[.,]\d+)?)%$/, function (m) { return 'اصابت کش ' + m[1] + '٪'; }],
+    [/^(.+)（(\d+)\/(\d+)） · (\d+)s$/, function (m) { return m[1] + ' (' + m[2] + '/' + m[3] + ') · ' + m[4] + ' ثانیه'; }],
+    [/^新增 (\d+) 个$/, function (m) { return m[1] + ' مورد افزوده شد'; }],
+    [/^移除 (\d+) 个$/, function (m) { return m[1] + ' مورد حذف شد'; }],
+    [/^新增 (\d+) 个，移除 (\d+) 个$/, function (m) { return m[1] + ' مورد افزوده و ' + m[2] + ' مورد حذف شد'; }],
+    [/^…还有 (\d+) 条$/, function (m) { return '…' + m[1] + ' مورد دیگر'; }],
+    [/^保留 (\d+) 条 · 省略 (\d+) 条$/, function (m) { return m[1] + ' مورد ماند · ' + m[2] + ' مورد حذف شد'; }],
+    [/^来自会话 (.+)$/, function (m) { return 'از گفت‌وگو: ' + m[1]; }],
+    [/^已压缩 (\d+) 条历史记录（约 (.+) tokens）$/, function (m) { return m[1] + ' آیتم تاریخچه فشرده شد (حدود ' + m[2] + ' توکن)'; }]
   ];
 
   /* ---------- ۴) مترجم گرهٔ متنی ---------- */
@@ -613,6 +1139,8 @@
     while (n && n !== html) {
       if (s.has(n.nodeName)) return true;
       if (n.nodeType === 1) {
+        /* متن قابل‌ویرایش کاربر هرگز ترجمه نمی‌شود */
+        if (n.getAttribute && n.getAttribute('contenteditable') === 'true') return true;
         var cl = n.getAttribute && n.getAttribute('class');
         if (typeof cl === 'string' && /hljs|token|monaco|cm-|highlight/.test(cl)) return true;
       }
@@ -636,7 +1164,19 @@
       var fa = translateText(node.nodeValue);
       if (fa) changes.push([node, fa]);
     }
-    for (var i = 0; i < changes.length; i++) changes[i][0].nodeValue = changes[i][1];
+    for (var i = 0; i < changes.length; i++) {
+      var n = changes[i][0];
+      n.nodeValue = changes[i][1];
+      /* اگر والد «برگِ فقط‌متنی» باشد و متن فارسی شده باشد، جهت متنِ همان برگ
+         راست‌چین می‌شود تا جملات ترکیبی (مثل «۱ نوبت · ۰ گام») در پاراگرافِ
+         چپ‌به‌راستِ اپ به‌هم نریزند. چون والد هیچ فرزند عنصری ندارد، هیچ
+         اثری بر چیدمان flex/grid اپ نمی‌گذارد. */
+      var p = n.parentElement;
+      if (p && !p.hasAttribute('dir') && p.children.length === 0 &&
+          /[\u0600-\u06FF]/.test(n.nodeValue) && n.nodeValue.length > 1) {
+        p.setAttribute('dir', 'rtl');
+      }
+    }
   }
 
   function translateAttrs(root) {
@@ -666,7 +1206,31 @@
     }
   }
 
-  /* ---------- ۵) برند ماه‌ای در نوار کناری ---------- */
+  /* ---------- ۵) برند ماه‌ای ---------- */
+  /* لوگوی پشتیبان — اگر logo.png به هر دلیلی لود نشود، همین SVG داخلی
+     (ماه + مغز هوشمند درخشان، آبی ماه‌افزار) نمایش داده می‌شود؛
+     یعنی ارمِ شرکت «هرگز» غایب نیست. */
+  var LOGO_FALLBACK =
+    'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#3282d0"/><stop offset="1" stop-color="#154a8f"/></linearGradient></defs>' +
+      '<circle cx="48" cy="48" r="46" fill="url(#g)"/>' +
+      '<path d="M62 16a34 34 0 1 0 18 46A28 28 0 0 1 62 16z" fill="#eaf3fc"/>' +
+      '<circle cx="40" cy="42" r="13" fill="none" stroke="#3282d0" stroke-width="3"/>' +
+      '<path d="M40 29v-6M40 61v6M27 42h-6M59 42h-6M31 33l-4-4M53 55l4 4M49 33l4-4M27 55l-4 4" stroke="#3282d0" stroke-width="3" stroke-linecap="round"/>' +
+      '<circle cx="40" cy="42" r="5" fill="#3282d0"/>' +
+      '<circle cx="66" cy="26" r="3" fill="#8fc0f2"/><circle cx="72" cy="38" r="2.4" fill="#8fc0f2"/><circle cx="66" cy="50" r="2" fill="#8fc0f2"/>' +
+      '</svg>');
+
+  function guardLogo(img) {
+    if (!img || img.__mahaiGuard) return;
+    img.__mahaiGuard = true;
+    img.addEventListener('error', function () {
+      if (img.src !== LOGO_FALLBACK) img.src = LOGO_FALLBACK;
+    });
+  }
+
   function injectBrand() {
     /* پنهان کردن ورد‌مارک انگلیسی (whale/deepseek HARNESS) — SVG مسیرمحور است
        و با ترجمهٔ متنی حذف نمی‌شود؛ شناسهٔ یکتای clipPath آن را می‌یابیم. */
@@ -699,19 +1263,23 @@
       if (fish[f] && fish[f].style) fish[f].style.display = 'none';
     }
 
-    if (document.getElementById('mahai-brandbar')) return;
+    if (document.getElementById('mahai-brandbar')) return true;
     /* نزدیک‌ترین جای پایدار: ابتدای نوار کناری */
     var aside = document.querySelector('aside') || document.querySelector('[data-sidebar]') || document.querySelector('nav');
-    if (!aside) return;
+    if (!aside) return false;
     var bar = document.createElement('div');
     bar.id = 'mahai-brandbar';
     bar.setAttribute('dir', 'rtl');
     bar.innerHTML =
-      '<img src="./mahai/logo.png" alt="ماه‌ای" />' +
+      '<img alt="ارم ماه‌ای — ماه‌افزار هوشمند رسا" />' +
       '<div><span class="mahai-name">ماه‌ای</span>' +
-      '<span class="mahai-sub">ماه‌افزار هوشمند رسا</span>' +
+      '<span class="mahai-sub">شرکت ماه‌افزار هوشمند رسا</span>' +
       '<span class="mahai-ver">پوستهٔ فارسی ' + SKIN_VER + '</span></div>';
+    var img = bar.querySelector('img');
+    img.src = './mahai/logo.png';
+    guardLogo(img);
     aside.insertBefore(bar, aside.firstChild);
+    return true;
   }
 
   /* ---------- ۵٫۵) نشان ماه‌ای در قهرمان صفحهٔ آغازین ----------
@@ -720,7 +1288,7 @@
      نکتهٔ مهم: در dsh تازه (EmptyHero.tsx) تیتر یک <span> داخل
      titleGroup/headline ماژولی است، نه h1/h2 — پس عناصر برگ را هم می‌گردیم. */
   function injectHero() {
-    if (document.getElementById('mahai-hero') && document.getElementById('mahai-hero-tag')) return;
+    if (document.getElementById('mahai-hero') && document.getElementById('mahai-hero-tag')) return true;
     var els = document.querySelectorAll('h1,h2,span,div');
     var title = null;
     for (var i = 0; i < els.length; i++) {
@@ -730,7 +1298,7 @@
       if (!t || t.length > 60) continue;
       if (/^(سفر به ناشناخته‌ها|Into the Unknown|探索未至之境)$/.test(t)) { title = el; break; }
     }
-    if (!title) return;
+    if (!title) return false;
     /* مرز درج: گروه تیتر و ردیف تیتر را با کلاس ماژولی (_titleGroup_…/_headline_…)
        می‌شناسیم تا ارم «بالای کل ردیف تیتر» بنشیند، نه کنارش؛
        در ساختارهای دیگر (h1/h2) همان خودِ عنوان مرز است. */
@@ -742,15 +1310,29 @@
     if (!host || host === document.body) {
       host = title.parentElement;
       headline = title;
-      if (!host || host === document.body) return;
+      if (!host || host === document.body) return false;
     }
     if (!document.getElementById('mahai-hero')) {
       var hero = document.createElement('div');
       hero.id = 'mahai-hero';
       hero.setAttribute('dir', 'rtl');
-      hero.innerHTML =
-        '<img src="./mahai/logo.png" alt="ارم ماه‌ای" />' +
-        '<div class="mahai-hero-name">ماه‌ای</div>';
+      hero.innerHTML = '<img alt="ارم ماه‌ای — ماه‌افزار هوشمند رسا" /><div class="mahai-hero-name">ماه‌ای</div>';
+      var himg = hero.querySelector('img');
+      himg.src = './mahai/logo.png';
+      guardLogo(himg);
+      /* اگر میزبان چیدمان «ردیفی» (flex-row) داشته باشد، سه‌گانهٔ ارم+تیتر+برچسب
+         در یک ستون پیچیده می‌شود تا ارم بالای تیتر بنشیند، نه کنارش */
+      var hostStyle = window.getComputedStyle(host);
+      if (hostStyle.display.indexOf('flex') !== -1 && hostStyle.flexDirection.indexOf('row') !== -1) {
+        var wrap = document.createElement('div');
+        wrap.className = 'mahai-hero-wrap';
+        var hcs = window.getComputedStyle(headline);
+        wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center;min-width:0;' +
+          'flex-grow:' + (hcs.flexGrow || '0') + ';flex-shrink:' + (hcs.flexShrink || '1') + ';flex-basis:' + (hcs.flexBasis === 'auto' ? 'auto' : 'auto') + ';';
+        host.insertBefore(wrap, headline);
+        wrap.appendChild(headline);
+        host = wrap;
+      }
       host.insertBefore(hero, headline);
     }
     if (!document.getElementById('mahai-hero-tag')) {
@@ -760,84 +1342,7 @@
       tag.textContent = 'محصول شرکت ماه‌افزار هوشمند رسا';
       headline.parentNode.insertBefore(tag, headline.nextSibling);
     }
-  }
-
-  /* ---------- ۵٫۶) اصلاح نسبت پنل‌ها در حالت راست‌چین ----------
-     در RTL گاهی پنل گفت‌وگو له می‌شود و پنل ابزارها/فضای خالی کل صفحه را می‌گیرد.
-     این اصلاح‌گر، پنل گفت‌وگو را عریض و پنل ابزارها را باریک (۳۶۰px) می‌کند. */
-  function isSidebarish(el) {
-    if (!el || el.nodeType !== 1) return true;
-    if (el === document.body || el === html) return true;
-    var tag = el.nodeName;
-    if (tag === 'ASIDE' || tag === 'NAV' || tag === 'HEADER' || tag === 'FOOTER') return true;
-    if (el.getAttribute && (el.getAttribute('data-sidebar') !== null || el.getAttribute('role') === 'navigation')) return true;
-    if (el.querySelector && (el.querySelector('[data-sidebar]') || el.querySelector('#mahai-brandbar'))) return true;
-    var cl = (el.getAttribute && el.getAttribute('class')) || '';
-    if (/sidebar|side-bar|navigation/i.test(cl)) return true;
-    return false;
-  }
-  function fixChatLayout() {
-    var composer = document.querySelector('textarea, [contenteditable="true"]');
-    if (!composer) return;
-
-    var row = null, chatPane = null, toolsPane = null;
-
-    /* راهبرد ۱ — پنل ابزارها از روی متن دکمه‌هایش پیدا می‌شود (دقیق‌ترین) */
-    var cand = document.querySelectorAll('button, div[role="button"], a');
-    var toolBtn = null;
-    for (var i = 0; i < cand.length; i++) {
-      var tx = cand[i].textContent || '';
-      if (/Workspace files|فایل‌های فضای کاری/.test(tx)) { toolBtn = cand[i]; break; }
-    }
-    if (toolBtn) {
-      var a = composer, b = toolBtn;
-      while (a && a !== document.body && !a.contains(b)) a = a.parentElement;
-      if (a && a !== document.body) {
-        row = a;
-        while (row && row.children.length === 1 && row.firstElementChild) row = row.firstElementChild;
-      }
-      if (row && row !== document.body) {
-        chatPane = null; toolsPane = null;
-        var kids = row.children;
-        for (var k = 0; k < kids.length; k++) {
-          if (kids[k].contains(composer)) chatPane = kids[k];
-          else if (kids[k].contains(toolBtn)) toolsPane = kids[k];
-        }
-      }
-    }
-
-    /* راهبرد ۲ — از سمت ورودی پیام به بالاترین جدِ مفید (پشتیبان) */
-    if (!chatPane || !toolsPane) {
-      var pane = composer, parent = pane.parentElement, found = null;
-      while (parent && parent !== document.body) {
-        var wide = 0, other = null;
-        for (var j = 0; j < parent.children.length; j++) {
-          var c = parent.children[j];
-          if (c === pane || isSidebarish(c)) continue;
-          var r = c.getBoundingClientRect();
-          if (r.width > 200 && r.height > 200) { wide++; other = other || c; }
-        }
-        if (wide >= 1 && other) { found = parent; break; }
-        pane = parent; parent = pane.parentElement;
-      }
-      if (found) {
-        row = found; chatPane = pane; toolsPane = other;
-      }
-    }
-
-    if (!row || !chatPane || !toolsPane || row === document.body) return;
-    var rr = row.getBoundingClientRect();
-    var cr = chatPane.getBoundingClientRect();
-    if (rr.width < 300 || cr.width > rr.width * 0.5) return; /* گفت‌وگو از قبل عریض است */
-
-    chatPane.style.flex = '1 1 auto';
-    chatPane.style.width = 'auto';
-    chatPane.style.minWidth = '0';
-    chatPane.style.maxWidth = 'none';
-    toolsPane.style.flex = '0 0 auto';
-    toolsPane.style.width = 'min(360px, 32vw)';
-    toolsPane.style.minWidth = '0';
-    toolsPane.style.overflow = 'hidden auto';
+    return true;
   }
 
   function applyTitle() {
@@ -846,30 +1351,45 @@
 
   /* ---------- ۶) ناظر DOM ---------- */
   var pending = null;
+  function cycle() {
+    applyTitle();
+    walk(document.body);
+    translateAttrs(document.body);
+    injectBrand();
+    injectHero();
+  }
   function schedule() {
     if (pending) return;
     pending = setTimeout(function () {
       pending = null;
       try {
-        /* React گاهی lang/dir را بازنویسی می‌کند — همیشه اعلام دوباره کن */
+        /* React گاهی lang را بازنویسی می‌کند — همیشه اعلام دوباره کن.
+           dir دست نمی‌خوریم: چیدمان باید همان چیدمان خود اپ بماند. */
         if (html.getAttribute('lang') !== 'fa') html.setAttribute('lang', 'fa');
-        if (html.getAttribute('dir') !== 'rtl') html.setAttribute('dir', 'rtl');
-        applyTitle(); walk(document.body); translateAttrs(document.body); injectBrand(); injectHero(); fixChatLayout();
+        if (html.getAttribute('dir') === 'rtl') html.removeAttribute('dir');
+        cycle();
       }
       catch (e) { /* خاموش — هرگز رابط را نشکن */ }
     }, 60);
   }
 
   function start() {
-    applyTitle();
-    walk(document.body);
-    translateAttrs(document.body);
-    injectBrand();
-    injectHero();
-    fixChatLayout();
+    try {
+      cycle();
+    } catch (e) { /* خاموش */ }
     new MutationObserver(schedule).observe(document.body, {
       childList: true, subtree: true, characterData: true
     });
+    /* گرم‌کن: سایدبار/قهرمان ممکن است با تأخیر سوار شوند — تا ۲۰ ثانیه
+       هر ۶۰۰ms اگر برند یا هیرو هنوز نیست، دوباره تلاش کن. */
+    var tries = 0;
+    var warm = setInterval(function () {
+      tries++;
+      try {
+        if (!document.getElementById('mahai-brandbar') || !document.getElementById('mahai-hero')) cycle();
+        if (tries > 33) clearInterval(warm);
+      } catch (e) { clearInterval(warm); }
+    }, 600);
   }
 
   if (document.readyState === 'loading') {

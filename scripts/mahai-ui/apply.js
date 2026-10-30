@@ -6,7 +6,9 @@
  * استفاده:  node apply.js <مسیر dist فرانت‌اند>
  * کارها:
  *   ۱) کپی دارایی‌های ماه‌ای (لوگو، فاوآیکن، css، js، فونت) به <dist>/mahai
- *   ۲) پچ <dist>/index.html : زبان/جهت، عنوان، فاوآیکن، تزریق css/js
+ *   ۲) پچ <dist>/index.html : زبان (فارسی)، عنوان، فاوآیکن، تزریق css/js
+ *      توجه v9: هیچ dir="rtl" روی <html> گذاشته نمی‌شود — چیدمان اپ باید
+ *      دست‌نخورده بماند؛ نسخه‌های قدیمی که dir می‌گذاشتند ترمیم می‌شوند.
  *   عملیات «توان‌بخش» (idempotent) است — اجرای مکرر بی‌ضرر است.
  */
 'use strict';
@@ -54,7 +56,8 @@ function patchIndex(dist) {
     // قبلاً پچ شده — lang/title را اصلاح کن و نسخهٔ css/js را تازه کن
     let changed = false;
     if (!/html[^>]*\blang="fa"/.test(html)) { html = html.replace(/(<html[^>]*\blang=")[^"]*(")/i, '$1fa$2'); changed = true; }
-    if (!/<html[^>]*\bdir="rtl"/.test(html)) { html = html.replace(/<html([^>]*)>/i, '<html$1 dir="rtl">'); changed = true; }
+    /* ترمیم پوسته‌های ≤۸: حذف dir="rtl" که چیدمان را آینه می‌کرد */
+    if (/<html[^>]*\bdir="rtl"/.test(html)) { html = html.replace(/(<html[^>]*?)\s+dir="rtl"/i, '$1'); changed = true; }
     if (!html.includes(TITLE)) { html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${TITLE}</title>`); changed = true; }
     const before = html;
     html = ensureNoCacheMeta(html);
@@ -71,16 +74,11 @@ function patchIndex(dist) {
     return { patched: changed, fresh: false, stamp };
   }
 
-  // ۱) زبان و جهت
+  // ۱) زبان — جهت چیدمان دست نمی‌خورد (v9)
   if (/<html[^>]*\blang="/i.test(html)) {
     html = html.replace(/(<html[^>]*\blang=")[^"]*(")/i, '$1fa$2');
   } else {
     html = html.replace(/<html([^>]*)>/i, '<html$1 lang="fa">');
-  }
-  if (!/<html[^>]*\bdir="/i.test(html)) {
-    html = html.replace(/<html([^>]*)>/i, '<html$1 dir="rtl">');
-  } else {
-    html = html.replace(/(<html[^>]*\bdir=")[^"]*(")/i, '$1rtl$2');
   }
 
   // ۲) عنوان و متای ضدکش

@@ -1,6 +1,11 @@
 /* ============================================================
-   ماه‌ای (MahAI) — لایهٔ رابط فارسی و راست‌چین برای dsh web
+   ماه‌ای (MahAI) — لایهٔ رابط فارسی برای dsh web
    محصول شرکت ماه‌افزار هوشمند رسا
+   v9: چیدمان اپ دست‌نخورده می‌ماند (بدون dir="rtl" سراسری که در
+   نسخه‌های قبلی نیمهٔ صفحه را خالی می‌کرد)؛ فقط جهتِ «متن» درون
+   عناصر متنی با unicode-bidi: plaintext از روی نخستین نویسهٔ قوی
+   جمله تعیین می‌شود — جملات فارسی درست رندر می‌شوند و کدها و
+   بلوک‌های انگلیسی سرِ جایشان می‌مانند.
    این فایل توسط scripts/patch-mahai-ui.sh|.ps1 روی dist فرانت‌اند
    کپی و از index.html بارگذاری می‌شود. به‌روزرسانی dsh این فایل را
    حذف نمی‌کند؛ فقط پچ دوباره لازم است (در setup-iran خودکار است).
@@ -79,6 +84,29 @@ html[lang="fa"] body {
   letter-spacing: 0;
 }
 
+/* ---------- جهت متن فارسی بدون شکستن چیدمان ----------
+   unicode-bidi: plaintext یعنی «جهت هر پاراگراف از محتوایش»:
+   جملهٔ فارسی راست‌به‌چپ رندر می‌شود، جملهٔ انگلیسی چپ‌به‌راست؛
+   اما هیچ جابه‌جایی چیدمانی (flex/grid) رخ نمی‌دهد. */
+html[lang="fa"] p,
+html[lang="fa"] li,
+html[lang="fa"] h1,
+html[lang="fa"] h2,
+html[lang="fa"] h3,
+html[lang="fa"] h4,
+html[lang="fa"] h5,
+html[lang="fa"] h6,
+html[lang="fa"] td,
+html[lang="fa"] th,
+html[lang="fa"] blockquote,
+html[lang="fa"] figcaption,
+html[lang="fa"] summary,
+html[lang="fa"] dt,
+html[lang="fa"] dd,
+html[lang="fa"] label {
+  unicode-bidi: plaintext;
+}
+
 /* عناصری که باید چپ‌چین/چپ‌به‌راست بمانند */
 html[lang="fa"] pre,
 html[lang="fa"] code,
@@ -100,10 +128,10 @@ html[lang="fa"] textarea {
   font-family: inherit;
 }
 
-/* نوار پیمایش عمودی باید در RTL سمت چپ نماند — اصلاح چیدمان‌های شکننده */
-html[lang="fa"] [dir="rtl"] [data-sidebar],
-html[lang="fa"] [dir="rtl"] aside {
-  text-align: right;
+/* نوار کناری و سایدبار در چیدمان دست‌نخورده — هم‌ترازی متن فارسی */
+html[lang="fa"] [data-sidebar],
+html[lang="fa"] aside {
+  text-align: start;
 }
 
 /* اعداد و شناسه‌ها در جدول‌ها خوانا بمانند */
